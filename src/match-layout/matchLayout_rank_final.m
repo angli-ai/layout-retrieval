@@ -2,7 +2,6 @@
 function matchLayout_rank_final
 close all;
 clear;
-addpath /scratch0/research/toolbox/
 
 if matlabpool('size')>0    
     matlabpool close;
@@ -12,17 +11,20 @@ if matlabpool('size') == 0 % checking to see if my pool is already open
 end
 
 imlist = dir('./data/*.jpg');
-relationList = dir('/scratch0/course/858B/project/query/arrangements/');
+relationList = dir('./arrangements/');
 relation_allscore = cell(length(relationList),1);
 bestlayout_all = cell(length(relationList),1);
 bestscore_all = cell(length(relationList),1);
 
+if ~exist('../../results/')
+    mkdir('../../results');
+end
 
 parfor r=3:length(relationList)
 tic;
 disp(['relation ' num2str(r-2) '/' num2str(length(relationList)-2)]);
 filename = relationList(r).name;
-d = load(['/scratch0/course/858B/project/query/arrangements/' filename]);
+d = load(['./arrangements/' filename]);
 data = d.data;
 % groundtruth image index for input textual layout
 imgidx = str2num(filename(1:3));
@@ -135,7 +137,7 @@ for r=3:length(relationList)
     end
 end
 
-save('relation_allscore.mat','relation_allscore','-v7.3');
+save('../../results/relation_allscore.mat','relation_allscore','-v7.3');
 
 end
 
@@ -156,11 +158,11 @@ for i=1:6
         rectangle('EdgeColor',[1 0 0],'Position',[layout(l,1),layout(l,2),layout(l,3)-layout(l,1)+1,layout(l,4)-layout(l,2)+1]);
         end
     end
-    imwrite(im,['/scratch0/course/858B/paper/imgs/top6-' num2str(r) '-' num2str(i) '.png']);
+    imwrite(im,['../../results/top6-' num2str(r) '-' num2str(i) '.png']);
 end
 
 h = plotbox(bestlayout);
-print(h,['/scratch0/course/858B/paper/imgs/textLayout-' num2str(r)],'-depsc2');
+print(h,['../../results/textLayout-' num2str(r)],'-depsc2');
 
 end
 
