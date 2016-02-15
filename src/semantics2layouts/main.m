@@ -1,11 +1,12 @@
-relation_path = '../relations';
-output_path = '../arrangements';
+rootpath = '../../data';
+relation_path = fullfile(rootpath, 'relations');
+output_path = fullfile(rootpath, 'arrangements');
 
 if ~exist(output_path, 'dir')
     mkdir(output_path);
 end
 
-num_layouts = 4;
+num_layouts = 5;
 
 matfiles = dir(fullfile(relation_path, '*.mat'));
 for i = 1:length(matfiles)
@@ -19,5 +20,5 @@ for i = 1:length(matfiles)
         continue
     end
     [data, layout_bounds] = semantics2layouts(rel, num_layouts);
-    save(fullfile(output_path, filename), 'data');
+    save(fullfile(output_path, filename), 'layout_bounds');
 end

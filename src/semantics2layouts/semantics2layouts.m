@@ -55,7 +55,11 @@ disp(layouts);
 % output.layouts = layouts;
 % output.objs = objs;
 
+% output = [];
+
 output = generate_image_proj(layouts, objs);
+
+
 % save(outputfile, 'layout_bounds', 'layouts', 'objs');
 % layouts = solve_by_LP(Nobjs, semantics, model, num_layouts)
 

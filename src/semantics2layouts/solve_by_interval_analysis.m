@@ -1,5 +1,12 @@
+% solve feasible solution space for given model and object relations
+% input:
+% - Nobjs: # of objects
+% - semantics: cell array of object spatial relations
+% - model: model parameters.
 function layouts = solve_by_interval_analysis(Nobjs, semantics, model)
+% solution space dimension
 dim = Nobjs * 2;
+
 layouts = {};
 for i = 1:Nobjs
     for j = 1:Nobjs
@@ -36,8 +43,12 @@ while ~q.isEmpty()
     q.remove();
     R = feasible(semantics, X);
     if ia_equal(R, [1, 1])
-        layouts = [layouts X];
-        disp(size(layouts));
+        % there might be too many intervals!
+        % todo: change this to random replacement
+        if length(layouts) < 1000
+            layouts = [layouts X];
+            disp(size(layouts));
+        end
 %         if length(layouts) > 0
 %             break
 %         end
@@ -45,8 +56,12 @@ while ~q.isEmpty()
         % discard
     else
         if maxdiff <= unit + eps
-            layouts = [layouts X];
-            disp(size(layouts));
+            % interval becomes small enough but still uncertain
+            % todo: change to random replacement
+            if length(layouts) < 1000
+                layouts = [layouts X];
+                disp(size(layouts));
+            end
 %             break;
             continue;
         end
@@ -101,6 +116,7 @@ function R = feasible(semantics, X)
 %         if ia_equal(R, [0, 0])
 %             break
 %         end
+
         b_dist = sqrt(ia_abs(ia_minus(x1, x2)).^2 + ia_abs(ia_minus(y1, y2))).^2;
         R = ia_and(R, ia_lt(b_dist, iUnear));
         switch rel
