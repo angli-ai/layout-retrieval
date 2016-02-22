@@ -1,0 +1,36 @@
+* http://www.eecs.umich.edu/vision/data/cvpr13IndoorData.tar.gz
+
+* datasplit.mat contains image list for train/test
+
+* testfiles_detections.mat contains DPM detection results on 3DGP dataset testset images.
+  
+ >> mydets = load('./testfiles_detections.mat');
+ >> mydets.detections
+
+ans =
+
+        models: {'bed'  'chair'  'diningtable'  'sidetable'  'sofa'  'table'}
+    im_results: {1x423 cell}
+
+% im_results contains detection results of each image, in testfile order according to datasplit.mat
+>> mydets.detections.im_results{1}
+
+ans =
+
+    [1x1 struct]
+    [1x1 struct]
+    [1x1 struct]
+    [1x1 struct]
+    [1x1 struct]
+    [1x1 struct]
+
+% 6 furniture detector results
+>> mydets.detections.im_results{1}{1}
+
+ans =
+
+      bbox: [254x6 double]
+    topbox: [5x6 double]
+   
+% bbox:  all detection boxes above preset threshold
+% topbox: bbox after non-maximum suppression
