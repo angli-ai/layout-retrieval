@@ -9,7 +9,7 @@ from pprint import pprint
 
 from nltk.tree import Tree
 
-TEXT_FILE = 'sunrgbd_text.txt'
+TEXT_FILE = 'written_text.txt'
 
 class StanfordNLP:
     def __init__(self):
@@ -25,9 +25,11 @@ def resolve_coref(sid, wid, visited_states, corefs):
     ret = [(sid, wid)]
     visited_states.add((sid, wid))
     for coref in corefs:
-        if (coref[0][1], coref[0][2])==(sid, wid) and (coref[1][1], coref[1][2]) not in visited_states:
+        #if (((coref[0][1], coref[0][2])==(sid, wid)) or (coref[0][2] == -1 and coref[0][1] == sid and coref[0][3] <= wid and coref[0][4] > wid)) and (coref[1][1], coref[1][4]-1) not in visited_states:
+        if ((coref[0][1], coref[0][4]-1)==(sid, wid)) and (coref[1][1], coref[1][4]-1) not in visited_states:
             ret.extend(resolve_coref(coref[1][1], coref[1][4]-1, visited_states, corefs))
-        if (coref[1][1], coref[1][2])==(sid, wid) and (coref[0][1], coref[0][2]) not in visited_states:
+        #if ((coref[1][1], coref[1][2])==(sid, wid) or (coref[1][2] == -1 and coref[1][1] == sid and coref[1][3] <= wid and coref[1][4] > wid))and (coref[0][1], coref[0][4]-1) not in visited_states:
+        if ((coref[1][1], coref[1][4]-1)==(sid, wid)) and (coref[0][1], coref[0][4]-1) not in visited_states:
             ret.extend(resolve_coref(coref[0][1], coref[0][4]-1, visited_states, corefs))
     return ret
     
@@ -47,25 +49,28 @@ def process_result(result):
     noun_id = collections.defaultdict(int)
     coref_id = {}
     if result.has_key('coref'):
-        corefs = result['coref'][0]
-        print(corefs)
-        # Resolve Coreference
-        for coref in corefs:
-            if (coref[0][1], coref[0][2]) not in coref_id.keys():
-                # do DFS, return a set of coref occurences
-                visited_states = set([])
-                coref_nouns = resolve_coref(coref[0][1], coref[0][4]-1, visited_states, corefs)
-                sid, wid = min(coref_nouns)
-                hw = sentences[sid][wid]
-                hw = deterine_noun(wid, hw, result['sentences'][sid]['dependencies'])
-                for x, y in coref_nouns:
-                    coref_id[(x, y)] = hw + '-%d' % noun_id[hw]
-                noun_id[hw] = noun_id[hw] + 1
+        for corefs in result['coref']:
+            #corefs = result['coref'][0]
+            #print(corefs)
+            # Resolve Coreference
+            for coref in corefs:
+                if (coref[0][1], coref[0][2]) not in coref_id.keys():
+                    # do DFS, return a set of coref occurences
+                    visited_states = set([])
+                    coref_nouns = resolve_coref(coref[0][1], coref[0][4]-1, visited_states, corefs)
+                    sid, wid = min(coref_nouns)
+                    #print(sentences[2])
+                    hw = sentences[sid][wid]
+                    hw = deterine_noun(wid, hw, result['sentences'][sid]['dependencies'])
+                    for x, y in coref_nouns:
+                        coref_id[(x, y)] = hw + '-%d' % noun_id[hw]
+                    noun_id[hw] = noun_id[hw] + 1
+                    #print('coref: ', coref, coref_nouns, hw)
 
     relations = []
     nouns = []
 
-    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right']
+    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right', 'in_front_of']
     prep_relation_set = ['prep_' + x for x in relation_set]
     noun_cnt = {}
     for sid, sent in enumerate(result['sentences']):
@@ -144,7 +149,8 @@ def process_result(result):
                                     break
                         else:
                             sub = noun_map[d2[-1]]
-                            cnt = noun_cnt[sub]
+                            #print('sub: ', sub)
+                            #cnt = noun_cnt[sub]
                         break
                 #print('sub: ', sub)
 
