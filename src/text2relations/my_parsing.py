@@ -9,7 +9,7 @@ from pprint import pprint
 
 from nltk.tree import Tree
 
-TEXT_FILE = 'written_text.txt'
+TEXT_FILE = 'sunrgbd_text.txt'
 
 class StanfordNLP:
     def __init__(self):
@@ -48,6 +48,7 @@ def process_result(result):
     coref_id = {}
     if result.has_key('coref'):
         corefs = result['coref'][0]
+        print(corefs)
         # Resolve Coreference
         for coref in corefs:
             if (coref[0][1], coref[0][2]) not in coref_id.keys():
@@ -63,40 +64,89 @@ def process_result(result):
 
     relations = []
     nouns = []
+
+    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right']
+    prep_relation_set = ['prep_' + x for x in relation_set]
+    noun_cnt = {}
     for sid, sent in enumerate(result['sentences']):
         #print 'SENTENCE: ', sent['text']
         #pprint(sent)
 
         # make a mapping between bed --> bed-1 by coreference
         noun_map = {}
+        prev_w = []
+
         for i, w in enumerate(sent['words']):
             if w[1]['PartOfSpeech'].startswith('NN') or w[1]['PartOfSpeech'] == 'PRP':
                 crid = coref_id.get((sid, i), -1)
                 if crid != -1:
                     noun_map[w[0] + '-%d' % (i+1)] = crid
+                    noun_cnt[crid] = '1'
                 elif w[1]['PartOfSpeech'].startswith(u'NN'):
                     noun = deterine_noun(i, w[1]['Lemma'], sent['dependencies'])
                     wid = noun_id[noun]
-                    noun_map[w[0] + '-%d' % (i+1)] = noun + '-%d' % wid
+                    noun_name = noun + '-%d' % wid
+                    noun_map[w[0] + '-%d' % (i+1)] = noun_name
                     noun_id[noun] += 1
+                    if w[1]['PartOfSpeech'].startswith('NNS'):
+                        # is plural
+                        if prev_w[1]['PartOfSpeech'].startswith('CD'):
+                            noun_cnt[noun_name] = prev_w[1]['NormalizedNamedEntityTag']
+                        elif prev_w[1]['Lemma'] == 'many':
+                            noun_cnt[noun_name] = 'many'
+                        #print('plural: ', w, prev_w, noun_name, noun_cnt[noun_name])
+                    else:
+                        noun_cnt[noun_name] = '1'
+            prev_w = w
+
 
         nouns.extend(noun_map.values())
-
 
         #print noun_map
         # extract prepositional dependencies
         for d in sent['dependencies']:
-            if d[0].startswith('prep'):
+            if d[0].startswith('prep') and d[0] in prep_relation_set:
+                #print('prep dep: ', d)
                 rel = d[0][5:]
 
-                obj = noun_map[d[-1]]
+                cnt = 0
+                # check 'prep each other'
+                if d[-1].startswith('other'):
+                    # find 'each'
+                    obj = 'not-each-other'
+                    for d2 in sent['dependencies']:
+                        if d2[0] == 'det' and d2[1].startswith('other') and d2[2].startswith('each'):
+                            # found each other
+                            obj = 'each-other'
+                            break
+                elif d[-1].startswith('head'):
+                    # check 'head of N'
+                    obj = noun_map[d[-1]]
+                    for d2 in sent['dependencies']:
+                        if d2[0] == 'prep_of' and d2[1].startswith('head'):
+                            obj = noun_map[d2[2]] + ":head"
+                            break
+                else:
+                    obj = noun_map[d[-1]]
+
 
                 # find the subject of the relation
                 anchor = d[1]
                 sub = '##UNKNOWN##'
                 for d2 in sent['dependencies']:
                     if d2[0] == 'nsubj' and d2[1] == anchor:
-                        sub = noun_map[d2[-1]]
+                        if d2[2].startswith('that'):
+                            # find rcmod, noun, anchor
+                            for d2 in sent['dependencies']:
+                                if d2[0] == 'rcmod' and d2[2] == anchor:
+                                    sub = noun_map[d2[1]]
+                                    cnt = noun_cnt[sub]
+                                    break
+                        else:
+                            sub = noun_map[d2[-1]]
+                            cnt = noun_cnt[sub]
+                        break
+                #print('sub: ', sub)
 
                 if obj.startswith('side'):
                     # Special handle: left/right
@@ -112,8 +162,9 @@ def process_result(result):
 
                 if sub != '##UNKNOWN##':
                     relations.append((str(sub), str(obj), str(rel)))
+                    print(cnt, sub, obj, rel)
     nouns = list(set(nouns))
-    return relations, nouns
+    return relations, nouns, noun_cnt
 
 if __name__ == '__main__':
     nlp = StanfordNLP()
@@ -121,7 +172,7 @@ if __name__ == '__main__':
     lines = open(TEXT_FILE, 'r').readlines()
     for i in range(0, len(lines), 2):
         result = nlp.parse(lines[i+1].strip())
-        relations, nouns = process_result(result)
+        relations, nouns, noun_cnt = process_result(result)
         print lines[i].strip()
         print lines[i+1].strip()
         print relations
@@ -134,6 +185,11 @@ if __name__ == '__main__':
         for i, rel in enumerate(relations):
             A[0, i] = np.zeros((1, 3), dtype=np.object)
             A[0, i][:] = rel
-        B = np.zeros((1, len(nouns)), dtype=np.object)
-        B[:] = nouns
+        B = np.zeros((2, len(noun_cnt)), dtype=np.object)
+        j = 0
+        print(noun_cnt)
+        for k in noun_cnt:
+            B[0, j] = k
+            B[1, j] = noun_cnt[k]
+            j = j + 1
         scipy.io.savemat(fn, {'rel':A, 'nouns':B})
