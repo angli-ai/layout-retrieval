@@ -10,8 +10,23 @@ if matlabpool('size') == 0 % checking to see if my pool is already open
     matlabpool('6')
 end
 
-imlist = dir('./data/*.jpg');
-relationList = dir('./arrangements/');
+% detection results of image database
+[database_detections,database_imgnames,IDmap_150_testset] = database_testset();
+
+ims = cell(length(database_imgnames),1);
+for i=1:length(database_imgnames)
+    ims{i} = imread(['../../data/imgs/' database_imgnames{i}]);
+end
+
+
+% query list
+relationList = dir('../../3dgp/data-v2/arrangements/');
+
+if ~exist('../../data/imgs/')
+    disp('3dgp raw images needed! Please make a symbol link at ../../data/imgs/ -> <3DGP>/cvpr13data/');
+    return
+end
+
 relation_allscore = cell(length(relationList),1);
 bestlayout_all = cell(length(relationList),1);
 bestscore_all = cell(length(relationList),1);
@@ -20,112 +35,128 @@ if ~exist('../../results/')
     mkdir('../../results');
 end
 
+% for each query input
 parfor r=3:length(relationList)
 tic;
-disp(['relation ' num2str(r-2) '/' num2str(length(relationList)-2)]);
-filename = relationList(r).name;
-d = load(['./arrangements/' filename]);
-data = d.data;
-% groundtruth image index for input textual layout
-imgidx = str2num(filename(1:3));
-
-% init proposed method best rank for groundtruth image
-bestrank = length(imlist);
-% init baseline method best rank (not changing for different layout) for
-% groundtruth image
-bestrank_base = length(imlist);
-
-
-
-% layout loop
-if ~isempty(data.layouts)
-    % scores of all database images and all layout
-    allscores = zeros(length(data.layouts)*length(data.layouts(1).layout2d),length(imlist));
-    allscores_counter = 1;
-    % scores of best ranked groundtruth image
-    bestscore = zeros(length(imlist),1);
-    % cooresponding layout input
-    bestlayout = zeros(6,4);
-    for k=1:length(data.layouts)
-        for m=1:length(data.layouts(k).layout2d)
-            % all possible 6x4 layout for given 2d projections
-            textLayout_all = getTextLayout(data.layouts(k).layout2d(m).objects);
-            
-            % score to generate rank list
-            scores = zeros(length(imlist),1);
-            scores_base = zeros(length(imlist),1);
-            layout_list = zeros(length(imlist));
-            
-
-            for i=1:length(imlist)
-                im = imread(['./data/' imlist(i).name]);
-                l = load(['./data/' imlist(i).name '-layout.mat']);
-                % image layout: [upperleft xy, lowerright xy]
-                layout = l.layout;
-                % convert image box to canonical space (y axis from large to small)
-                layout(:,2) = size(im,1)-layout(:,2);
-                layout(:,4) = size(im,1)-layout(:,4);
-
-                
-                
-                scores_l = zeros(1,length(textLayout_all));
-                for t = 1:length(textLayout_all)
-                    % calculate matching score
-                    scores_l(t) = calculateScore(textLayout_all{t},layout);
-                end
-                
-                % find best score for all possible 6x4 layout
-                [scores(i),maxidx] = max(scores_l);
-                layout_list(i) = maxidx;
-                % for baseline, layout doesn't matter, and only need to
-                % calculate once
-                if k==1
-                scores_base(i) = calculateScore_nolayout(textLayout_all{1},layout);
-                end
-            end
-
-            [~,idx] = sort(scores,'descend');
-            c_rank = find(idx==imgidx);
-            c_layout = textLayout_all{layout_list(imgidx)};
-            if c_rank < bestrank
-                bestrank = c_rank;
-                bestscore = scores;
-                bestlayout = c_layout;
-            end
-
-            if k==1
-            [~,idx_base] = sort(scores_base,'descend');
-            c_rank_base = find(idx_base==imgidx);
-            if c_rank_base < bestrank_base
-                bestrank_base = c_rank_base;
-            end
-            end
-            
-            allscores(allscores_counter,:) = scores;
-            allscores_counter = allscores_counter+1;
-
-        end
+    disp(['relation ' num2str(r-2) '/' num2str(length(relationList)-2)]);
+    filename = relationList(r).name;
+    d = load(['../../3dgp/data-v2/arrangements/' filename]);
+    data = d.data;
+    % groundtruth image index for input textual layout
+    imgidx = str2num(filename(1:3));
+   
+    % skip if not in test set
+    if ~isKey(IDmap_150_testset, imgidx)
+        continue;
     end
+ 
+    testset_idx = IDmap_150_testset(imgidx);
+    imgidx = -1;
     
-meanscore = mean(allscores);
-[~,idx] = sort(meanscore,'descend');
-meanscore_rank = find(idx==imgidx);
 
-maxscore = max(allscores);
-[~,idx] = sort(maxscore,'descend');
-maxscore_rank = find(idx==imgidx);
-
-disp(['relation ' num2str(r-2) ', mean rank: ' num2str(meanscore_rank) ', maxscore rank: ' num2str(maxscore_rank) ', bestrank: ' num2str(bestrank) ', baseline rank: ' num2str(bestrank_base)])
-
-% parfor cannot show image
-% showTop6(bestscore,imlist,r,bestlayout);
-bestlayout_all{r-2} = bestlayout;
-bestscore_all{r-2} = bestscore;
+    % init proposed method best rank for groundtruth image
+    bestrank = length(database_detections);
+    % init baseline method best rank (not changing for different layout) for
+    % groundtruth image
+    bestrank_base = length(database_detections);
 
 
-relation_allscore{r-2} = allscores;
 
-end
+    % layout loop
+    if ~isempty(data.layouts)
+        % scores of all database images and all layout
+        allscores = zeros(length(data.layouts)*length(data.layouts(1).layout2d),length(database_detections));
+        allscores_counter = 1;
+        % scores of best ranked groundtruth image
+        bestscore = zeros(length(database_detections),1);
+        % cooresponding layout input
+        bestlayout = zeros(6,4);
+        % for each layout
+        for k=1:length(data.layouts)
+            % for each 3d/2d sample
+            for m=1:length(data.layouts(k).layout2d)
+                % all possible 6x4 layout for given 2d projections
+                textLayout_all = getTextLayout(data.layouts(k).layout2d(m).objects);
+                
+                % score to generate rank list
+                scores = zeros(length(database_detections),1);
+                scores_base = zeros(length(database_detections),1);
+                layout_list = zeros(length(database_detections));
+                
+                % for each image in the database
+                for i=1:length(database_detections)
+                    %disp(sprintf('data.lyaouts: %d, layout2d: %d, database: %d', k, m, i));
+                    %im = imread(['../../data/imgs/' database_imgnames{i}]);
+                    
+                    % read detection boxes of this database image
+                    % image layout: [upperleft xy, lowerright xy]
+                    layout = detection2layout(database_detections{i});
+
+                    % convert image box to canonical space (y axis from large to small)
+                    layout(:,2) = size(ims{i},1)-layout(:,2);
+                    layout(:,4) = size(ims{i},1)-layout(:,4);
+                    
+
+                    
+                    
+                    scores_l = zeros(1,length(textLayout_all));
+                    for t = 1:length(textLayout_all)
+                        % calculate matching score
+                        scores_l(t) = calculateScore(textLayout_all{t},layout);
+                    end
+                    
+                    % find best score for all possible 6x4 layout
+                    [scores(i),maxidx] = max(scores_l);
+                    layout_list(i) = maxidx;
+                    % for baseline, layout doesn't matter, and only need to
+                    % calculate once
+                    if k==1
+                        scores_base(i) = calculateScore_nolayout(textLayout_all{1},layout);
+                    end
+                end
+
+                [~,idx] = sort(scores,'descend');
+                c_rank = find(idx==testset_idx);
+                c_layout = textLayout_all{layout_list(testset_idx)};
+                if c_rank < bestrank
+                    bestrank = c_rank;
+                    bestscore = scores;
+                    bestlayout = c_layout;
+                end
+
+                if k==1
+                    [~,idx_base] = sort(scores_base,'descend');
+                    c_rank_base = find(idx_base==testset_idx);
+                    if c_rank_base < bestrank_base
+                        bestrank_base = c_rank_base;
+                    end
+                end
+                
+                allscores(allscores_counter,:) = scores;
+                allscores_counter = allscores_counter+1;
+
+            end
+        end
+        
+        meanscore = mean(allscores);
+        [~,idx] = sort(meanscore,'descend');
+        meanscore_rank = find(idx==testset_idx);
+
+        maxscore = max(allscores);
+        [~,idx] = sort(maxscore,'descend');
+        maxscore_rank = find(idx==testset_idx);
+
+        disp(['relation ' num2str(r-2) ', mean rank: ' num2str(meanscore_rank) ', maxscore rank: ' num2str(maxscore_rank) ', bestrank: ' num2str(bestrank) ', baseline rank: ' num2str(bestrank_base)])
+
+        % parfor cannot show image
+        % showTop6(bestscore,imlist,r,bestlayout);
+        bestlayout_all{r-2} = bestlayout;
+        bestscore_all{r-2} = bestscore;
+
+
+        relation_allscore{r-2} = allscores;
+
+    end
 
 
 toc;
@@ -133,7 +164,7 @@ end
 
 for r=3:length(relationList)
     if ~isempty(bestscore_all{r-2})
-        showTop6(bestscore_all{r-2},imlist,r-2,bestlayout_all{r-2});
+        showTop6(bestscore_all{r-2},database_imgnames,r-2,bestlayout_all{r-2});
     end
 end
 
@@ -144,20 +175,21 @@ end
 %% Helper functions
 
 % show top 6 retrieved images
-function showTop6(scores,imlist,r,bestlayout)
+function showTop6(scores,database_imgnames,r,bestlayout)
 [~,idx] = sort(scores,'descend');
 
 figure,
 for i=1:6
-    im =imread(['./data/' imlist(idx(i)).name]);
-    load(['./data/' imlist(idx(i)).name '-layout.mat']);
+    im =imread(['../../data/imgs/' database_imgnames{idx(i)}]);
+    %load(['./data/' imlist(idx(i)).name '-layout.mat']);
     
     subplot(2,3,i),imshow(im)
-    for l=1:size(layout,1)
-        if layout(l,1)>10e-4
-        rectangle('EdgeColor',[1 0 0],'Position',[layout(l,1),layout(l,2),layout(l,3)-layout(l,1)+1,layout(l,4)-layout(l,2)+1]);
-        end
-    end
+    %for l=1:size(layout,1)
+        %if layout(l,1)>10e-4
+        %rectangle('EdgeColor',[1 0 0],'Position',[layout(l,1),layout(l,2),layout(l,3)-layout(l,1)+1,layout(l,4)-layout(l,2)+1]);
+        %end
+    %end
+    disp(sprintf('Top im %d, %s, testset ID %d', i, database_imgnames{idx(i)}, idx(i)));
     imwrite(im,['../../results/top6-' num2str(r) '-' num2str(i) '.png']);
 end
 
@@ -199,6 +231,8 @@ for o=1:length(objects)
             f = 1;
         case 'chair'
             f = 2;
+        case 'dining'
+            f = 3;
         case 'dinning'
             f = 3;
         case 'side'
