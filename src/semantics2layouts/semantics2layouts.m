@@ -1,4 +1,4 @@
-function [output, layout_bounds] = semantics2layouts(semantics, num_layouts)
+function [output, layout_bounds, tot] = semantics2layouts(semantics, num_layouts, varargin)
 
 if nargin < 2
 	semantics = {...
@@ -28,7 +28,13 @@ for i = 1:length(semantics)
     semantics{i}{4} = 1;
 end
 
-layout_bounds = solve_by_interval_analysis(Nobjs, semantics, model);
+boundmap = build_bound_matrix(Nobjs, semantics);
+
+if nargin < 3
+    [layout_bounds, tot] = solve_by_interval_analysis(Nobjs, semantics, boundmap, model);
+else
+    layout_bounds = varargin{1};
+end
 
 % layouts = random_by_interval_analysis(Nobjs, semantics);
 
@@ -40,7 +46,7 @@ if ~isempty(layout_bounds)
         for i = randperm(length(layout_bounds))
             cnt = cnt + 1;
             layouts(:, cnt) = random_btw(layout_bounds{i}(:, 1), layout_bounds{i}(:, 2));
-            if cnt == 4
+            if cnt == num_layouts
                 break;
             end
         end

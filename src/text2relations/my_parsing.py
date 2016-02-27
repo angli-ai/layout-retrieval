@@ -9,7 +9,8 @@ from pprint import pprint
 
 from nltk.tree import Tree
 
-TEXT_FILE = 'written_text.txt'
+TEXT_FILE = 'written_text-all.txt'
+TEXT_FILE = 'sunrgbd_text.txt'
 
 class StanfordNLP:
     def __init__(self):
@@ -36,9 +37,10 @@ def resolve_coref(sid, wid, visited_states, corefs):
 
 def deterine_noun(loc, noun, dependencies):
     if noun == 'table':
+        print(loc, noun, dependencies)
         for d in dependencies:
             if 'table-%d'%(loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('side')) or
-                                               (d[0]=='amod' and d[2].startswith('dinning'))): 
+                                               (d[0]=='amod' and d[2].startswith('dining'))): 
                 noun = d[2].split('-')[0] + '-' + noun
     return noun
 
@@ -51,7 +53,7 @@ def process_result(result):
     if result.has_key('coref'):
         for corefs in result['coref']:
             #corefs = result['coref'][0]
-            #print(corefs)
+            print(corefs)
             # Resolve Coreference
             for coref in corefs:
                 if (coref[0][1], coref[0][2]) not in coref_id.keys():
@@ -75,19 +77,19 @@ def process_result(result):
     noun_cnt = {}
     for sid, sent in enumerate(result['sentences']):
         #print 'SENTENCE: ', sent['text']
-        #pprint(sent)
+        pprint(sent)
 
         # make a mapping between bed --> bed-1 by coreference
         noun_map = {}
         prev_w = []
 
         for i, w in enumerate(sent['words']):
-            if w[1]['PartOfSpeech'].startswith('NN') or w[1]['PartOfSpeech'] == 'PRP':
+            if w[1]['PartOfSpeech'].startswith('NN') or w[1]['PartOfSpeech'] == 'JJ' or w[1]['PartOfSpeech'] == 'PRP':
                 crid = coref_id.get((sid, i), -1)
                 if crid != -1:
                     noun_map[w[0] + '-%d' % (i+1)] = crid
                     noun_cnt[crid] = '1'
-                elif w[1]['PartOfSpeech'].startswith(u'NN'):
+                elif w[1]['PartOfSpeech'].startswith(u'NN') or w[1]['PartOfSpeech'] == 'JJ':
                     noun = deterine_noun(i, w[1]['Lemma'], sent['dependencies'])
                     wid = noun_id[noun]
                     noun_name = noun + '-%d' % wid
@@ -107,11 +109,11 @@ def process_result(result):
 
         nouns.extend(noun_map.values())
 
-        #print noun_map
+        print noun_map
         # extract prepositional dependencies
         for d in sent['dependencies']:
             if d[0].startswith('prep') and d[0] in prep_relation_set:
-                #print('prep dep: ', d)
+                print('prep dep: ', d)
                 rel = d[0][5:]
 
                 cnt = 0
@@ -177,10 +179,12 @@ if __name__ == '__main__':
 
     lines = open(TEXT_FILE, 'r').readlines()
     for i in range(0, len(lines), 2):
-        result = nlp.parse(lines[i+1].strip())
+        currentline = lines[i+1].strip().replace("side table", "side-table").replace("dining table", "dining-table")
+        result = nlp.parse(currentline)
         relations, nouns, noun_cnt = process_result(result)
         print lines[i].strip()
         print lines[i+1].strip()
+        print currentline
         print relations
         print nouns
 
