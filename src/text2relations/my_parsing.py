@@ -43,6 +43,11 @@ def deterine_noun(loc, noun, dependencies):
             if 'table-%d'%(loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('side')) or
                                                (d[0]=='nn' and d[2].startswith('dining'))): 
                 noun = d[2].split('-')[0] + '-' + noun
+    elif noun == 'stand':
+        print(loc, noun, dependencies)
+        for d in dependencies:
+            if 'stand-%d'%(loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('night'))):
+                noun = d[2].split('-')[0] + '-' + noun
     return noun
 
 def process_result(result):
