@@ -85,7 +85,7 @@ def process_result(result):
     relations = []
     nouns = []
 
-    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right', 'in_front_of', 'by']
+    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right', 'in_front_of', 'by', 'in', 'against']
     prep_relation_set = ['prep_' + x for x in relation_set]
     noun_cnt = {}
     for sid, sent in enumerate(result['sentences']):
@@ -121,7 +121,7 @@ def process_result(result):
 
                 if not noun_name in noun_cnt:
                     if w[1]['PartOfSpeech'].startswith('NNS'):
-                        #print('(prev_w, w) =', prev_w, w)
+                        print('(prev_w, w) =', prev_w, w)
                         # is plural
                         if prev_w[1]['PartOfSpeech'].startswith('CD'):
                             noun_cnt[noun_name] = prev_w[1]['NormalizedNamedEntityTag']
@@ -142,7 +142,15 @@ def process_result(result):
         #print noun_map
         # extract prepositional dependencies
         for d in sent['dependencies']:
-            if d[0].startswith('prep') and d[0] in prep_relation_set:
+            if d[0] == 'nsubj' and d[1].startswith('occluded'):
+                rel = 'occluded'
+                sub = noun_map[d[-1]]
+                cnt = noun_cnt[sub]
+                if sub != '##UNKNOWN##':
+                    relations.append((str(sub), str(''), str(rel)))
+                    print(cnt, sub, mapped_obj, rel)
+
+            elif d[0].startswith('prep') and d[0] in prep_relation_set:
                 #print('prep dep: ', d)
                 rel = d[0][5:]
 
@@ -209,6 +217,10 @@ def process_result(result):
                             cnt = noun_cnt[sub]
                         break
                 #print('sub: ', sub)
+
+                if rel == 'in' and mapped_obj.startswith('row'):
+                    rel = 'in-a-row'
+                    mapped_obj = ''
 
                 if sub != '##UNKNOWN##':
                     relations.append((str(sub), str(mapped_obj), str(rel)))
