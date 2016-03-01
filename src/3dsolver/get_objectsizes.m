@@ -40,3 +40,12 @@ end
 relation.sizes = objectsizes;
 relation.class = objectclass;
 relation.support = needsupport;
+relation.againstwall = [];
+for i = 1:length(objectclass)
+    switch relation.class{i}
+        case {'dresser', 'bed', 'night-stand', 'picture'}
+            relation.againstwall(i) = true;
+        otherwise
+            relation.againstwall(i) = false;
+    end
+end
