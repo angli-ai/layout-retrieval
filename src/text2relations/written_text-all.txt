@@ -1,0 +1,88 @@
+test.jpg
+A monitor is on the desk. A fridge is next to the desk on the right side.
+030.jpg
+The bed is near the side table. The bed is also near another side table.
+031.jpg
+The bed is near a side table. The bed is near another side table.
+032.jpg
+There is a bed.
+033.jpg
+The bed is near the side table. The bed is also near another side table. The sofa is in front of the bed.
+034.jpg
+The bed is near the side table.
+035.jpg
+The bed is near a side table. The bed is near another side table. The chair is on the left side of the bed.
+036.jpg
+The side table is near the bed. The chair is on the left side of the side table.
+037.jpg
+The bed is near the side table.
+038.jpg
+The bed is near the side table.
+039.jpg
+The chair is behind the table. The table is on the left side of side table. The side table is on the left side of the bed.
+060.jpg
+A chair is on the left side of the dining table. Another chair is in front of the dining table. The sofa is behind the dining table.
+061.jpg
+A chair is in front of the dining table. Some chairs are on the left side of the dining table. Some chairs are on the right side of the dining table.
+062.jpg
+A chair is in front of the dining table. Another chair is on the left side of the dining table, and another chair is on the right side of the dining table.
+063.jpg
+A side table is above the dining table. Another chair is in front of the dining table. A chair is on the left side of the dining table, and another chair is on the right side of the dining table.
+064.jpg
+A chair is in front of the dining table. Another chair is behind the dining table. Some chairs are near the dining table.
+065.jpg
+Some chairs are in front of the dining table.
+066.jpg
+A chair is on the left side of the dining table. Anotehr chair is on the right side of the dining table.
+067.jpg
+Some chairs are near the dining table. A chair is in front of the dining table.
+068.jpg
+Two chairs are in front of the dining table. Three chairs are behind the dining table.
+069.jpg
+Some chairs are near the dining table. A chair is on the left side of dining table, and another chair is on the right side of dining table.
+130.jpg
+A sofa is behind a side table.
+131.jpg
+A sofa is behind a table. The sofa is near another sofa. Some chairs are on the left side of the table, and some other chairs are on the right side of the table.
+132.jpg
+A sofa is near a side table. Another side table is on the right side of the sofa.
+133.jpg
+A sofa is near the side table. Another sofa is on the left side of the side table. A sofa is in front of the side table.
+134.jpg
+The sofa is behind the side table.
+135.jpg
+A sofa is on the left side of the side table. Another sofa is behind the side table.
+136.jpg
+A sofa is on the right side of side table.
+137.jpg
+A sofa is behind the side table. Another sofa is on the left side of the side table, and another sofa is on the right side of the side table.
+138.jpg
+A sofa is on the left side of the side table, and another sofa is on the right side of the side table.
+139.jpg
+A sofa is in front of the side table, and another sofa is on the right side of the side table.
+
+
+
+063.jpg
+A side table is on the dining table. Another chair is in front of the dining table. A chair is on the left side of the dining table, and another chair is on the right side of the dining table.
+
+1-00024.jpg
+A picture is above a bed. A night stand is on the left side of the head of the bed. A lamp is on the night stand. Another picture is above the lamp. The night stand is actually occluded. A dresser is on the right side of the head of the bed.
+2-00054.jpg
+There are five chairs. The five chairs are in a row. The chairs are also against the wall.
+3-00015.jpg
+There is a picture above a bed. A lamp is near the head of the bed. A picture is above the lamp. A dresser is next to the lamp. Another picture is above the dresser.
+4-00094.jpg
+There is a chair on the left side of the table. Another chair is on the right side of the table. 
+5-00109.jpg
+There are some pillows on the bed. A night stand is next to the head of the bed. And a lamp is on the night stand. A sofa is near the night stand. There is also another pillow on the sofa.
+6-00110.jpg
+There is a TV on a TV desk. The TV desk is against the wall. Another desk is next to the TV desk. A chair is near the desk. A lamp is on the desk. And a picture is above the desk.
+7-00177.jpg
+There is a chair. The chair is against the wall. A short table is next to the chair. Another table is next to the short table. Another chair is next to this table. Another two chairs are also near this table.
+8-00132.jpg
+There are eight pictures above a triple sofa. The pictures are side by side. A table is in front of the sofa.
+9-00192.jpg
+There is a bed. The bed is against the wall. Some pillows are on the bed. A night stand is next to the head of the bed. A sofa is against another wall. And it is close to the rear of the bed.
+10-00249.jpg
+There are three garage bins in a row.
