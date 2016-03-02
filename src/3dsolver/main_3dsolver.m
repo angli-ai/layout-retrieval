@@ -1,8 +1,14 @@
 % 3dsolver main
 
 inputdir = 'testdata';
+outputroot = 'output';
+if ~exist(outputroot, 'dir')
+    mkdir(outputroot);
+end
 
-relation_mat = '000024.jpg-relation.mat';
+imagename = '00024';
+relation_mat = [imagename '.jpg-relation.mat'];
+outputdir = fullfile(outputroot, imagename);
 
 relation = load(fullfile(inputdir, relation_mat));
 
@@ -35,4 +41,4 @@ layouts = interval_branch_bound(config);
 % sample layouts
 num_layout_sample = 5;
 layout_samples = sample_layouts(layouts, num_layout_sample);
-plot_layouts(config, layout_samples);
+plot_layouts(config, layout_samples, outputdir);

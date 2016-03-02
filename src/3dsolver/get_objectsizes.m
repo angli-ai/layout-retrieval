@@ -49,3 +49,8 @@ for i = 1:length(objectclass)
             relation.againstwall(i) = false;
     end
 end
+% check against wall
+for i = 1:length(relation.wallobj)
+    objid = strcmp(relation.wallobj{i}, relation.nouns);
+    relation.againstwall(objid) = true;
+end

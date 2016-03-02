@@ -37,6 +37,14 @@ def resolve_coref(sid, wid, visited_states, corefs):
     
 
 def deterine_noun(loc, noun, dependencies):
+    if noun == 'bin' or noun == 'bins':
+        for d in dependencies:
+            if '%s-%d'%(noun, loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('garage'))):
+                noun = d[2].split('-')[0] + '-' + noun
+    if noun == 'sofa':
+        for d in dependencies:
+            if 'sofa-%d'%(loc+1) == d[1] and ((d[0]=='amod' and d[2].startswith('triple'))):
+                noun = d[2].split('-')[0] + '-' + noun
     if noun == 'table':
         print(loc, noun, dependencies)
         for d in dependencies:
@@ -85,7 +93,7 @@ def process_result(result):
     relations = []
     nouns = []
 
-    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right', 'in_front_of', 'by', 'in', 'against']
+    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right', 'in_front_of', 'by', 'in', 'against', 'to']
     prep_relation_set = ['prep_' + x for x in relation_set]
     noun_cnt = {}
     for sid, sent in enumerate(result['sentences']):
@@ -159,6 +167,12 @@ def process_result(result):
                 mapped_obj = ''
                 obj_attrib = ''
 
+                if d[0] == 'prep_to':
+                    if d[1].startswith('next'):
+                        rel = 'next-to'
+                    elif d[1].startswith('close'):
+                        rel = 'close-to'
+
                 if d[0] == 'prep_by' and d[1].startswith('side') and d[2].startswith('side'):
                     rel = 'side-by-side'
                     obj = ''
@@ -176,12 +190,12 @@ def process_result(result):
                         if d2[1] == d[-1] and d2[0] == 'prep_of':
                             obj = d2[-1]
 
-                if obj.startswith('head'):
+                if obj.startswith('head') or obj.startswith('rear'):
                     # check 'head of something'
                     for d2 in sent['dependencies']:
-                        if d2[0] == 'prep_of' and d2[1].startswith('head'):
+                        if d2[0] == 'prep_of' and d2[1] == obj:
+                            obj_attrib = obj[0:4]
                             obj = d2[2]
-                            obj_attrib = "head"
                             break
 
                 # check 'prep each other'
@@ -203,7 +217,10 @@ def process_result(result):
                 anchor = d[1]
                 sub = '##UNKNOWN##'
                 for d2 in sent['dependencies']:
-                    if d2[0] == 'nsubj' and d2[1] == anchor:
+                    if d2[0] == 'nsubj' and d2[2] == anchor:
+                        sub = noun_map[anchor]
+                        cnt = noun_cnt[sub]
+                    elif d2[0] == 'nsubj' and d2[1] == anchor:
                         if d2[2].startswith('that'):
                             # find rcmod, noun, anchor
                             for d2 in sent['dependencies']:
