@@ -1,16 +1,13 @@
+% plot samples from solutions
 % 3dsolver main
 
 inputdir = 'testdata';
-outputroot = 'output';
-if ~exist(outputroot, 'dir')
-    mkdir(outputroot);
-end
+outputroot = 'output-ramawks';
 
-id = 8;
+id = 7;
 imagename = dir(fullfile(inputdir, num2str(id, '%d-*.mat')));
 imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
-% imagename = 'test';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
@@ -40,14 +37,9 @@ config.relation = relation;
 config.objmodels = objmodels;
 config.room = room;
 config.spatial = spatial;
-num_layout_sample = 5;
-num_layout_sample_each = 1;
-% compute layouts
-layouts = interval_branch_bound(config, num_layout_sample_each);
-% sample layouts
-layout_samples = sample_layouts(layouts, num_layout_sample);
-if ~exist(outputdir, 'dir')
-    mkdir(outputdir);
-end
-save(fullfile(outputdir, 'layout3d.mat'), 'layouts', 'layout_samples');
+% layout_samples = sample_layouts(layouts, num_layout_sample);
+% if ~exist(outputdir, 'dir')
+%     mkdir(outputdir);
+% end
+load(fullfile(outputdir, 'layout3d.mat'), 'layouts', 'layout_samples');
 plot_layouts(config, layout_samples, outputdir);

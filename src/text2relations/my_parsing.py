@@ -93,7 +93,7 @@ def process_result(result):
     relations = []
     nouns = []
 
-    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right', 'in_front_of', 'by', 'in', 'against', 'to']
+    relation_set = ['beside', 'near', 'above', 'on', 'behind', 'front', 'left', 'right', 'in_front_of', 'by', 'in', 'against', 'to', 'under']
     prep_relation_set = ['prep_' + x for x in relation_set]
     noun_cnt = {}
     for sid, sent in enumerate(result['sentences']):
@@ -121,6 +121,7 @@ def process_result(result):
                     noun_name = crid
                     # noun_cnt[crid] = '1'
                 elif w[1]['PartOfSpeech'].startswith(u'NN'):
+                    print(w)
                     noun = deterine_noun(i, w[1]['Lemma'], sent['dependencies'])
                     wid = noun_id[noun]
                     noun_name = noun + '-%d' % wid
@@ -134,9 +135,9 @@ def process_result(result):
                         if prev_w[1]['PartOfSpeech'].startswith('CD'):
                             noun_cnt[noun_name] = prev_w[1]['NormalizedNamedEntityTag']
                         elif prev_w[1]['Lemma'] == 'many':
-                            noun_cnt[noun_name] = 'many'
+                            noun_cnt[noun_name] = '3'
                         elif prev_w[1]['Lemma'] == 'some':
-                            noun_cnt[noun_name] = 'some'
+                            noun_cnt[noun_name] = '2'
                         else:
                             print('unprocessed count:', prev_w[1]['Lemma'])
                     else:
@@ -254,8 +255,8 @@ if __name__ == '__main__':
 
     lines = open(TEXT_FILE, 'r').readlines()
     for i in range(0, len(lines), 2):
-        #currentline = lines[i+1].strip().replace("side table", "side-table").replace("dining table", "dining-table")
-        currentline = lines[i+1].strip()
+        currentline = lines[i+1].strip().replace("garage bin", "garage-bin")
+        #currentline = lines[i+1].strip()
         result = nlp.parse(currentline)
         relations, nouns, noun_cnt = process_result(result)
         print lines[i].strip()

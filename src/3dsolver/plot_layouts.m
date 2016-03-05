@@ -1,5 +1,9 @@
 function plot_layouts(config, layouts, outputdir)
-if ~exist(outputdir, 'dir')
+if nargin < 3
+    outputdir = [];
+end
+
+if ~isempty(outputdir) && ~exist(outputdir, 'dir')
     mkdir(outputdir);
 end
 
@@ -16,7 +20,7 @@ for i = 1:Nlayouts
         c = get_color(config.relation.class{j});
         pts = [];
         switch config.relation.class{j}
-            case {'bed', 'chair'}
+            case {'bed', 'chair', 'sofa', 'desk', 'table'}
                 pts2d = [];
                 for k = 1:length(config.objmodels.subobjs)
                     if strncmp(config.objmodels.subobjs{k}, config.relation.class{j}, length(config.relation.class{j}))
@@ -58,15 +62,21 @@ for i = 1:Nlayouts
     h = figure(1);
     axis equal;
     hold off;
-    saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-3d.jpg')));
+    if ~isempty(outputdir)
+        saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-3d.jpg')));
+    end
     h = figure(2);
     axis equal;
     hold off;
-    saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.jpg')));
+    if ~isempty(outputdir)
+        saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.jpg')));
+    end
     h = figure(3);
     axis equal;
     hold off;
-    saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-bbox.jpg')));
+    if ~isempty(outputdir)
+        saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-bbox.jpg')));
+    end
 %     plot([bbox(1), bbox(3), bbox(3), bbox(1), bbox(1)], ...
 %         [bbox(2), bbox(2), bbox(4), bbox(4), bbox(2)], 'Color', cmap(c, :));
 %     hold on;
@@ -108,6 +118,7 @@ else
         s = config.relation.sizes(objid, :);
         xx = cubmat * s';
         xx(4:5) = [xx(5) xx(4)];
+        xx(1:2) = [xx(2) xx(1)];
     elseif direction == 1
         s = config.relation.sizes(objid, :);
         xx = cubmat * s';

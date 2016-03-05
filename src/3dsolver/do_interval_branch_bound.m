@@ -1,4 +1,4 @@
-function layouts = do_interval_branch_bound(X0, config)
+function layouts = do_interval_branch_bound(X0, config, nsamples)
 % enumerate directions
 Nobj = length(config.relation.nouns);
 X0 = X0(1:Nobj*4, :);
@@ -10,7 +10,7 @@ Ndir = length(index);
 
 assert(Ndir < 10, 'support at most 10 directions');
 
-dir_val = uint8(dec2bin(1:(2^Ndir-1), Ndir)) - uint8('0');
+dir_val = uint8(dec2bin(0:(2^(Ndir-1)-1), Ndir)) - uint8('0');
 
 % enumerate orientations
 for i = 1:size(dir_val, 1)
@@ -18,7 +18,118 @@ for i = 1:size(dir_val, 1)
     X(index, :) = [dir_val(i, :); dir_val(i, :)]';
     [ok, X] = direction_check_ok(X, config);
     if ok
-        layouts = [layouts, interval_analysis(X, config)];
+        layouts = [layouts, random_interval_analysis(X, config, nsamples)];
+    end
+end
+
+if Ndir == 0
+    X = X0;
+    [ok, X] = direction_check_ok(X, config);
+    if ok
+        layouts = [layouts, random_interval_analysis(X, config, nsamples)];
+    end
+end
+
+function X = random_sol(X)
+n = size(X, 1);
+X(:, 1) = X(:, 1) + (X(:, 2) - X(:, 1)) .* rand(n, 1);
+X(:, 2) = X(:, 1);
+
+function layouts = check_random_sol(config, q, unit)
+Xrand = random_sol(q);
+[Xrand, R] = shrink_and_feasible(config, Xrand, unit);
+if vector_eq(R, [1, 1])
+    % feasible
+    layouts = Xrand;
+else
+    layouts = {};
+end
+
+function layouts = random_interval_analysis(X0, config, nsamples)
+
+layouts = {};
+
+boundmap = build_boundmap(config, X0);
+
+q = zeros(size(X0, 1), size(X0, 2), 0);
+q = cat(3, q, X0);
+N = 1;
+
+unit = 0.2;
+
+maxN = 1000;
+
+while N > 0 && length(layouts) < nsamples
+    X = q(:, :, N);
+    N = N - 1;
+    X = shrink(X, boundmap, unit);
+    [X, R] = shrink_and_feasible(config, X, unit);
+    [maxdiff, index] = max(X(:, 2) - X(:, 1));
+    fprintf(1, 'q.size = %d, maxdiff = %.2f\n', N, maxdiff);
+    if vector_eq(R, [1, 1])
+        % feasible
+        layouts = [layouts X];
+    elseif vector_eq(R, [0, 0])
+        % not feasible
+    else
+        % possibly feasible
+        X1 = X;
+        X2 = X;
+        % split on orientation first
+%         index = find(X(dir_index, 1) ~= X(dir_index, 2));
+        % split on 
+        if config.relation.againstwall(ceil(index/4))
+            k = mod(index, 4);
+            if k == 1 && X(index+1,2) ~= 0 || k == 2 && X(index-1,2) ~= 0
+                X1(index, 2) = X(index, 1);
+                X2(index+3-2*k, 2) = X(index+3-k*2, 1);
+                pos1 = randi(N+1);
+                if pos1 <= N
+                    q(:, :, N+1) = q(:, :, pos1);
+                end
+                q(:, :, pos1) = X1;
+                if N == maxN
+                    layouts = [layouts check_random_sol(config, q(:, :, N+1), unit)];
+                else
+                    N = N + 1;
+                end
+                pos1 = randi(N+1);
+                if pos1 <= N
+                    q(:, :, N+1) = q(:, :, pos1);
+                end
+                q(:, :, pos1) = X2;
+                if N == maxN
+                    layouts = [layouts check_random_sol(config, q(:, :, N+1), unit)];
+                else
+                    N = N + 1;
+                end
+                continue;
+            end
+        end
+        mid = (X(index, 1) + X(index, 2)) / 2;
+        mid = round(mid / unit) * unit;
+        X1(index, 2) = mid;
+        X2(index, 1) = mid;
+        pos1 = randi(N+1);
+        if pos1 <= N
+            q(:, :, N+1) = q(:, :, pos1);
+        end
+        q(:, :, pos1) = X1;
+        if N == maxN
+            layouts = [layouts, check_random_sol(config, q(:, :, N+1), unit)];
+        else
+            N = N + 1;
+        end
+        pos1 = randi(N+1);
+        if pos1 <= N
+            q(:, :, N+1) = q(:, :, pos1);
+        end
+        q(:, :, pos1) = X2;
+        if N == maxN
+            layouts = [layouts check_random_sol(config, q(:, :, N+1), unit)];
+        else
+            N = N + 1;
+        end
     end
 end
 
@@ -76,12 +187,25 @@ end
 % shrink the interval and check feasibility
 function [X, R] = shrink_and_feasible(config, X, unit)
 
+if sum(X(:, 1) > X(:, 2) + eps) > 0
+    R = [0, 0];
+    return;
+end
+
 [maxdiff, index] = max(X(:, 2) - X(:, 1));
 
 R = [];
 % check bounds
 Nobj = length(config.relation.nouns);
 for i = 1:Nobj
+    if X(i*4-3,2) < eps && X(i*4-2,2) < X(config.x0index*4-2,1) - eps
+        R = [0, 0];
+        return;
+    end
+    if X(i*4-2,2) < eps && X(i*4-3,2) < X(config.y0index*4-3,1) - eps
+        R = [0, 0];
+        return;
+    end
     if config.relation.againstwall(i)
         % against-the-wall objects
         % x = 0 or y = 0
@@ -93,19 +217,29 @@ for i = 1:Nobj
 end
 
 % check mutual exclusive
+coords = cell(1, Nobj);
 for i = 1:Nobj
-    [p1, q1] = get_coords(config, config.relation.nouns{i}, i, X(i*4, :), X((i-1)*4+(1:3),:));
-    for j = i+1:Nobj
-        [p2, q2] = get_coords(config, config.relation.nouns{j}, j, X(j*4, :), X((j-1)*4+(1:3),:));
-        Rintersect = [1, 1];
-        for k = 1:3
-            Rintersect = ia.and(Rintersect, ia.lt(max(p1(k,:),p2(k,:)),min(q1(k,:),q2(k,:))));
-        end
-        if vector_eq(Rintersect, [1, 1])
-            R = [0, 0];
-            return;
-        else
-            R = ia.and(R, ia.not(Rintersect));
+    coords{i} = get_model_coords(config, config.relation.nouns{i}, i, X(i*4, :), X((i-1)*4+(1:3),:));
+end
+for i = 1:Nobj
+    coordi = coords{i};
+    for ii = 1:length(coordi)
+        coordii = coordi{ii};
+        for j = i+1:Nobj
+            coordj = coords{j};
+            for jj = 1:length(coordj)
+                coordjj = coordj{jj};
+                Rintersect = [1, 1];
+                for k = 1:3
+                    Rintersect = ia.and(Rintersect, ia.lt(max(coordii{1}(k,:),coordjj{1}(k,:)),min(coordii{2}(k,:),coordjj{2}(k,:))));
+                end
+                if vector_eq(Rintersect, [1, 1])
+                    R = [0, 0];
+                    return;
+                else
+                    R = ia.and(R, ia.not(Rintersect));
+                end
+            end
         end
     end
 end
@@ -114,17 +248,32 @@ dnear = config.spatial.near;
 datt = config.spatial.attach;
             
 % check relation
-Nrel = length(config.relation.rel);
+Nrel = size(config.relation.rel, 1);
 for i = 1:Nrel
     if ~isempty(R) && vector_eq(R, [0, 0])
         return
     end
     semantic = config.relation.rel(i, :);
     obj1 = get_objectid(semantic{1}, config.relation.nouns);
-    obj2 = get_objectid(semantic{2}, config.relation.nouns);
     rel = semantic{3};
     [p1, q1] = get_coords(config, semantic{1}, obj1, X(obj1*4, :), X((obj1-1)*4+(1:3),:));
-    [p2, q2] = get_coords(config, semantic{2}, obj2, X(obj2*4, :), X((obj2-1)*4+(1:3),:));
+    if iscell(semantic{2})
+        p2 = repmat([inf, -inf], 3, 1);
+        q2 = p2; z2 = [inf, -inf];
+        for j = 1:length(semantic{2})
+            obj2j = get_objectid(semantic{2}{j}, config.relation.nouns);
+            [p2j, q2j, z2j] = get_coords(config, semantic{2}{j}, obj2, X(obj2*4, :), X((obj2-1)*4+(1:3),:));
+            p2(:, 1) = min(p2(:, 1), p2j(:, 1));
+            p2(:, 2) = max(p2(:, 2), p2j(:, 2));
+            q2(:, 1) = min(q2(:, 1), q2j(:, 1));
+            q2(:, 2) = max(q2(:, 2), q2j(:, 2));
+            z2(1) = min(z2(1), z2j(1));
+            z2(2) = max(z2(2), z2j(2));
+        end
+    else
+        obj2 = get_objectid(semantic{2}, config.relation.nouns);
+        [p2, q2, z2] = get_coords(config, semantic{2}, obj2, X(obj2*4, :), X((obj2-1)*4+(1:3),:));
+    end
 
     switch rel
         case {'near', 'close-to'}
@@ -133,6 +282,17 @@ for i = 1:Nrel
             end
 %                 b_dist = sqrt(ia_abs(ia_minus(x1, x2)).^2 + ia_abs(ia_minus(y1, y2))).^2;
 %                 R = ia_and(R, ia_lt(b_dist, iUnear));
+        case 'attach'
+            for k = 1:3
+                R = ia.and(R, ia.le(max(p1(k,:)-datt,p2(k,:)),min(q1(k,:)+datt,q2(k,:))));
+            end
+        case 'next-to'
+            for k = 1:3
+                R = ia.and(R, ia.le(max(p1(k,:)-datt,p2(k,:)),min(q1(k,:)+datt,q2(k,:))));
+            end
+            if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
+                R = ia.and(R, ia.equal(X(obj1*4,:), X(obj2*4,:)));
+            end
         case 'left'
             for k = 1:3
                 R = ia.and(R, ia.le(max(p1(k,:)-datt,p2(k,:)),min(q1(k,:)+datt,q2(k,:))));
@@ -154,12 +314,11 @@ for i = 1:Nrel
 %             R = ia_and(R, ia.lt(x2, x1));
 %             R = ia_and(R, ia.lt(ia_abs(ia_minus(y1, y2)), iUshift));
         case {'in_front_of', 'front'}
-            R = ia_and(R, ia_lt(y1, y2));
-            R = ia_and(R, ia_lt(ia_abs(ia_minus(x1, x2)), iUshift));
+            R = ia.and(R, ia.near(dnear, p1, q1, p2, q2));
+            R = ia.and(R, ia.not(ia.and(ia.le(p1(1, :), p2(1, :)), ia.le(p1(2, :), p2(2, :)))));
         case 'behind'
-            R = ia_and(R, ia_lt(y2, y1));
-            R = ia_and(R, ia_lt(ia_abs(ia_minus(x1, x2)), iUshift));
-            
+            R = ia.and(R, ia.near(dnear, p1, q1, p2, q2));
+            R = ia.and(R, ia.not(ia.and(ia.le(p2(1, :), p1(1, :)), ia.le(p2(2, :), p1(2, :)))));        
         case {'side-by-side', 'in-a-row'}
             for k = 1:3
                 R = ia.and(R, ia.lt(max(p1(k,:)-dnear,p2(k,:)),min(q1(k,:)+dnear,q2(k,:))));
@@ -173,8 +332,16 @@ for i = 1:Nrel
             R = ia.and(R, ia.lt(p1(3,:), q2(3,:)+dnear));
             
         case 'on'
-            R = ia.and(R, ia.equal(p1(3,:), q2(3,:)));
+            R = ia.and(R, ia.equal(p1(3,:), z2));
             % weight center supported.
+            tmp = (p1(1,:)+q1(1,:))/2;
+            R = ia.and(R, ia.lt(p2(1,:), tmp));
+            R = ia.and(R, ia.lt(tmp, q2(1,:)));
+            tmp = (p1(2,:)+q1(2,:))/2;
+            R = ia.and(R, ia.lt(p2(2,:), tmp));
+            R = ia.and(R, ia.lt(tmp, q2(2,:)));
+            
+        case 'under'
             tmp = (p1(1,:)+q1(1,:))/2;
             R = ia.and(R, ia.lt(p2(1,:), tmp));
             R = ia.and(R, ia.lt(tmp, q2(1,:)));

@@ -18,6 +18,7 @@ for i = 1:length(relation.rel)
         assert(length(firstnames) > 1);
         for j = 2:length(firstnames)
             new_relation.rel = [new_relation.rel; {firstnames{j-1}, firstnames{j}, elem{3}}];
+            new_relation.rel = [new_relation.rel; {firstnames{j-1}, firstnames{j}, 'right'}];
         end
         continue;
     end
@@ -39,15 +40,33 @@ for i = 1:length(relation.rel)
             end
         else
             secondnames = get_objectnames(elem{2}, objectnames, objectcounts);
-            for k = 1:length(secondnames)
-                new_relation.rel = [new_relation.rel; {firstnames{j}, secondnames{k}, elem{3}}];
+            if length(secondnames) == 1
+                secondnames = secondnames{1};
             end
+            new_relation.rel = [new_relation.rel; {firstnames{j}, secondnames, elem{3}}];
             new_relation.nouns = [new_relation.nouns secondnames];
         end
     end
 end
 new_relation.nouns = unique(get_rootname(new_relation.nouns));
 new_relation.occ = unique(new_relation.occ);
+
+for i = 1:size(new_relation.rel, 1)
+    if strncmp(new_relation.rel{i, 1}, 'pillow', 6) ...
+            && strcmp(new_relation.rel{i, 3}, 'on')
+        if strncmp(new_relation.rel{i, 2}, 'bed', 3) 
+            rel = new_relation.rel(i, :);
+            rel{2} = [rel{2} ':head'];
+            rel{3} = 'attach';
+            new_relation.rel = [new_relation.rel; rel];
+        elseif strncmp(new_relation.rel{i, 2}, 'sofa', 4)
+            rel = new_relation.rel(i, :);
+            rel{2} = [rel{2} ':back'];
+            rel{3} = 'attach';
+            new_relation.rel = [new_relation.rel; rel];
+        end
+    end
+end
 
 % get regular object dimensions
 new_relation = get_objectsizes(new_relation);

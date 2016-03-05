@@ -1,4 +1,4 @@
-function [p, q] = get_coords(config, objname, objid, direction, X)
+function [p, q, z_support] = get_coords(config, objname, objid, direction, X)
 subobjname = get_subobjname(objname);
 if isempty(subobjname)
     p = X;
@@ -21,6 +21,7 @@ else
         s = config.relation.sizes(objid, :);
         xx = cubmat * s';
         xx(4:5) = [xx(5) xx(4)];
+        xx(1:2) = [xx(2) xx(1)];
     elseif vector_eq(direction, [1 1])
         s = config.relation.sizes(objid, :);
         xx = cubmat * s';
@@ -28,3 +29,4 @@ else
     p = X + repmat(xx(1:3), 1, 2);
     q = X + repmat(xx(1:3) + xx(4:6), 1, 2);
 end
+z_support = X(3, :) + s(3);
