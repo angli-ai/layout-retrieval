@@ -6,7 +6,7 @@ if ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
 
-id = 8;
+id = 13;
 imagename = dir(fullfile(inputdir, num2str(id, '%d-*.mat')));
 imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;

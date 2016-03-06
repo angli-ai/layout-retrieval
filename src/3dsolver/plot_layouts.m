@@ -7,8 +7,8 @@ if ~isempty(outputdir) && ~exist(outputdir, 'dir')
     mkdir(outputdir);
 end
 
-
 Nlayouts = length(layouts);
+layout2d = {};
 
 cmap = colormap;
 for i = 1:Nlayouts
@@ -16,6 +16,7 @@ for i = 1:Nlayouts
     Nobj = size(layout.objs, 2);
     figure(1);
     scatter3(layout.cam(1), layout.cam(2), layout.cam(3), 'x'); hold on;
+    bbox2d = [];
     for j = 1:Nobj
         c = get_color(config.relation.class{j});
         pts = [];
@@ -56,6 +57,7 @@ for i = 1:Nlayouts
         fill([bbox(1), bbox(3), bbox(3), bbox(1)], ...
             [bbox(2), bbox(2), bbox(4), bbox(4)], c);
         hold on;
+        bbox2d = [bbox2d; bbox'];
         % project to 2d: pts
 %         [pts2d, zbuf] = camera_projection(pts, layout.cam, pi/2 + layout.cam_ax/180*pi, layout.focal);
     end
@@ -77,10 +79,15 @@ for i = 1:Nlayouts
     if ~isempty(outputdir)
         saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-bbox.jpg')));
     end
+    layout_table = table(config.relation.class', bbox2d(:, 1), bbox2d(:, 2), bbox2d(:, 3), bbox2d(:, 4), ...
+        'VariableNames',{'classname' 'X1' 'Y1' 'X2' 'Y2'});
+    layout2d{i} = layout_table;
 %     plot([bbox(1), bbox(3), bbox(3), bbox(1), bbox(1)], ...
 %         [bbox(2), bbox(2), bbox(4), bbox(4), bbox(2)], 'Color', cmap(c, :));
 %     hold on;
 end
+
+save(fullfile(outputdir, 'layout2d.mat'), 'layout2d');
 
 function [img_pt, zbuffer] = camera_projection(pts, cam, theta, focal)
 rp = bsxfun(@minus, pts, cam);
