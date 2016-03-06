@@ -1,0 +1,10 @@
+function layout = normalize_composition(layout)
+Xmin = min([layout.X1; layout.X2]);
+Ymin = min([layout.Y1; layout.Y2]);
+Xmax = max([layout.X1; layout.X2]);
+Ymax = max([layout.Y1; layout.Y2]);
+K = (Xmax - Xmin);
+layout.X1 = (layout.X1 - Xmin) / K;
+layout.X2 = (layout.X2 - Xmin) / K;
+layout.Y1 = (layout.Y1 - Ymin) / K;
+layout.Y2 = (layout.Y2 - Ymin) / K;
