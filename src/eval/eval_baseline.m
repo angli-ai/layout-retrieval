@@ -2,7 +2,7 @@
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-resultdir = 'sunrgbd-output';
+resultdir = 'sunrgbd-output-2';
 
 % load ground truth
 detection_dir = fullfile('detection-box', dataset);
@@ -27,8 +27,12 @@ for i = 1:ntest
 end
 
 res_ranks = [];
+gt_ranks = [];
+det_ranks = [];
+det_ranks_soft = [];
+queries = {};
 
-for id = 1:15
+for id = 1:21
     inputmat = dir(fullfile(inputdir, num2str(id, '%d-*.mat')));
     assert(length(inputmat) == 1);
     inputmat = inputmat.name;
@@ -36,13 +40,18 @@ for id = 1:15
     index = strfind(inputmat, '-');
     imageid = inputmat(index(1)+1:index(2)-5);
     imageid = str2num(imageid);
+    queryid = inputmat(1:index(2)-5);
     
     if exist(fullfile(resultdir, [inputmat(1:index(2)-5) '.mat']), 'file')
         result = load(fullfile(resultdir, inputmat(1:index(2)-5)));
         score_res = -max(result.final_score, [], 2);
     else
         score_res = [];
+        continue;
     end
+    
+    
+    queries = [queries queryid];
 
     inputdata = load(fullfile(inputdir, inputmat));
     for i = 1:length(inputdata)
@@ -63,7 +72,7 @@ for id = 1:15
 %     A = randperm(ntest);
 %     [~, B] = sort(A);
     score = score_gt(imageid);
-    gt_ranks(id) = round((sum(score_gt < score - eps) + 1 + sum(score_gt < score + eps)) / 2);
+    gt_ranks = [gt_ranks round((sum(score_gt < score - eps) + 1 + sum(score_gt < score + eps)) / 2)];
 %     [score, rank] = sort(score_gt);
 %     [~, rank] = sort(rank);
 %     score = score(B(imageid));
@@ -73,13 +82,13 @@ for id = 1:15
 %     [~, rank] = sort(rank);
 %     det_ranks(id) = rank(B(imageid));
     score = score_det(imageid);
-    det_ranks(id) = round((sum(score_det < score - eps) + 1 + sum(score_det < score + eps)) / 2);
+    det_ranks = [det_ranks round((sum(score_det < score - eps) + 1 + sum(score_det < score + eps)) / 2)];
     
 %     [~, rank] = sort(score_det_soft(A));
 %     [~, rank] = sort(rank);
 %     det_ranks_soft(id) = rank(B(imageid));
     score = score_det_soft(imageid);
-    det_ranks_soft(id) = round((sum(score_det_soft < score - eps) + 1+ sum(score_det_soft < score + eps)) / 2);
+    det_ranks_soft = [det_ranks_soft round((sum(score_det_soft < score - eps) + 1+ sum(score_det_soft < score + eps)) / 2)];
     
     if ~isempty(score_res)
         score = score_res(imageid);
@@ -92,4 +101,5 @@ for id = 1:15
 end
 h = figure(1);
 tableres = plot_curves({gt_ranks, det_ranks, det_ranks_soft, res_ranks}, ntest, {'gt', 'det', 'det soft', 'det w/ spatial'});
+output = table(queries', gt_ranks', det_ranks', det_ranks_soft', res_ranks');
 saveas(h, 'result.png');

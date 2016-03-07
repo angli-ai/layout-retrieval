@@ -26,6 +26,7 @@ end
 Ngrids = length(s);
 Nobj = size(layout, 1);
 score = zeros(1, Ngrids);
+prev_classname = '';
 for i = 1:Nobj
     classname = layout.classname{i};
     if strcmp(classname, 'garage-bin')
@@ -33,6 +34,7 @@ for i = 1:Nobj
     else
         classname(strfind(classname, '-')) = '_';
     end
+
     x1 = layout.X1(i) * s + x;
     y1 = layout.Y1(i) * s + y;
     x2 = layout.X2(i) * s + x;
@@ -41,7 +43,16 @@ for i = 1:Nobj
     index = find(strcmp(image.classname, classname));
     if isempty(index), continue, end
     maxp = [];
-    for j = index'
+    Ncandid = length(index);
+    if strcmp(classname, prev_classname)
+        dup = true;
+    else
+        dup = false;
+        valid = ones(Ncandid, Ngrids);
+    end
+    pick = zeros(1, Ngrids);
+    for jj = 1:length(index)
+        j = index(jj);
         pos = [image.X1(j) image.Y1(j) image.X2(j) image.Y2(j)];
         area = (pos(3) - pos(1)) * (pos(4) - pos(2));
         conf = image.conf(j);
@@ -52,12 +63,16 @@ for i = 1:Nobj
         interA = max(0, (interx2 - interx1)) .* max(0, (intery2 - intery1));
         iou = interA ./ (a + area - interA);
         p = iou * conf;
+        p = p .* valid(jj, :);
         if isempty(maxp)
             maxp = p;
+            pick(:) = jj;
         else
+            pick(p > maxp) = jj;
             maxp = max(p, maxp);
         end
     end
     score = score + maxp;
+    valid((0:Ngrids-1)*Ncandid+pick) = 0;
 end
 score = score / Nobj;

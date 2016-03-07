@@ -6,7 +6,7 @@ nquery = 21;
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-outputdir = 'sunrgbd-output-2';
+outputdir = 'sunrgbd-output-3';
 if ~exist('SUNRGBDMeta', 'var')
     load('/Users/ang/projects/layout3d/sunrgbd-dataset/SUNRGBDtoolbox/Metadata/SUNRGBDMeta.mat');
 end
@@ -92,10 +92,10 @@ for id = 1:nquery
         if k == gt_index
             fprintf(1, '%d: gt score %f\n', id, max(S));
         end
-    %     if max(S) > 0.260765
-    %         rank = rank + 1;
-    %     end
-    %     fprintf(1, '%d: %f, gt rank %d\n', k, max(S), rank);
+%         if max(S) > 0.282410 + eps
+%             rank = rank + 1;
+%         end
+        fprintf(1, '%d: %f, gt rank %d\n', k, max(S), rank);
     %     break;
     end
     max_score = max(final_score, [], 2);
