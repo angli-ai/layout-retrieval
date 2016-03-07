@@ -1,10 +1,12 @@
 % eval exhaustive search
 
-input_layout2d = '../3dsolver/output-ramawks/';
+input_layout2d = '../3dsolver/output-ramawks-2/';
+
+nquery = 21;
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-outputdir = 'sunrgbd-output';
+outputdir = 'sunrgbd-output-2';
 if ~exist('SUNRGBDMeta', 'var')
     load('/Users/ang/projects/layout3d/sunrgbd-dataset/SUNRGBDtoolbox/Metadata/SUNRGBDMeta.mat');
 end
@@ -24,7 +26,7 @@ end
 
 visualize = false;
 
-for id = 1:15
+for id = 1:nquery
 
 %     id = 10;
     inputmat = dir(fullfile(input_layout2d, num2str(id, '%d-*')));

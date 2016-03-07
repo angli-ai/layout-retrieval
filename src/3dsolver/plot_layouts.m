@@ -76,6 +76,12 @@ for i = 1:Nlayouts
     h = figure(3);
     axis equal;
     hold off;
+    for j = 1:Nobj
+        bbox = bbox2d(j, :);
+        rectangle('Position', [bbox(1:2) bbox(3:4)-bbox(1:2)], 'edgecolor', 'r', 'linewidth', 2);
+        text(bbox(1), bbox(4), config.relation.class{j}, 'backgroundcolor', 'w', 'edgecolor', 'k', ...
+    'interpreter', 'none');
+    end
     if ~isempty(outputdir)
         saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-bbox.jpg')));
     end
