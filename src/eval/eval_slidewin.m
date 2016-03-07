@@ -8,7 +8,7 @@ dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
 outputdir = 'sunrgbd-output-3';
 if ~exist('SUNRGBDMeta', 'var')
-    load('/Users/ang/projects/layout3d/sunrgbd-dataset/SUNRGBDtoolbox/Metadata/SUNRGBDMeta.mat');
+    load('detection-box/SUNRGBDMeta.mat');
 end
 
 % load ground truth
@@ -101,7 +101,7 @@ for id = 1:nquery
     max_score = max(final_score, [], 2);
     [~, ranks] = sort(max_score);
     [~, ranks] = sort(ranks);
-    fprintf(1, '%d: rank %d\n', id, Ntest-ranks(gt_index)+1);
+    fprintf(1, 'query %d: rank %d\n', id, Ntest-ranks(gt_index)+1);
     save(fullfile(outputdir, imagename), 'final_score');
 %     break;
 % break;
