@@ -1,7 +1,8 @@
-function plot_curves(ranks, ntot, methods)
+function tableres = plot_curves(ranks, ntot, methods)
 nmethod = length(ranks);
 curvedata = {};
 aucdata = [];
+topK = [];
 for i = 1:nmethod
     data = zeros(1, ntot);
     Ntest = length(ranks{i});
@@ -13,7 +14,11 @@ for i = 1:nmethod
     auc = sum(cumdata) / ntot;
     curvedata = [curvedata, (1:ntot)/ntot, cumdata];
     aucdata = [aucdata, auc];
+    topK = [topK; cumdata];
 end
+
+tableres = topK;
+
 plot(curvedata{:}, 'LineWidth', 2);
 grid on;
 xlabel('Percentage of top ranked images');
@@ -25,4 +30,5 @@ end
 legend(methods{:}, 'Location', 'southeast');
 % title('Old 3d solver on 3dgp dataset');
 set(gca, 'fontsize', 15);
+
 % saveas(h, 'old-3dsolver-3dgp.jpg');

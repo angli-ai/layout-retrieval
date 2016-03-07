@@ -255,7 +255,7 @@ if __name__ == '__main__':
 
     lines = open(TEXT_FILE, 'r').readlines()
     for i in range(0, len(lines), 2):
-        currentline = lines[i+1].strip().replace("garage bin", "garage-bin")
+        currentline = lines[i+1].strip().replace("garbage bin", "garbage-bin")
         #currentline = lines[i+1].strip()
         result = nlp.parse(currentline)
         relations, nouns, noun_cnt = process_result(result)

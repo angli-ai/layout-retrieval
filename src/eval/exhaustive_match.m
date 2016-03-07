@@ -28,6 +28,11 @@ Nobj = size(layout, 1);
 score = zeros(1, Ngrids);
 for i = 1:Nobj
     classname = layout.classname{i};
+    if strcmp(classname, 'garage-bin')
+        classname = 'garbage_bin'; % fix error
+    else
+        classname(strfind(classname, '-')) = '_';
+    end
     x1 = layout.X1(i) * s + x;
     y1 = layout.Y1(i) * s + y;
     x2 = layout.X2(i) * s + x;

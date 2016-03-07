@@ -1,17 +1,15 @@
+% convert layout3d to layout2d
+
 % 3dsolver main
 
-inputdir = 'testdata-2';
-outputroot = 'output-2';
-if ~exist(outputroot, 'dir')
-    mkdir(outputroot);
-end
+inputdir = 'testdata';
+outputroot = 'output-ramawks';
 
-% id = 13;
-% imagename = dir(fullfile(inputdir, num2str(id, '%d-*.mat')));
-% imagename = imagename.name(1:end-length('.jpg-relation.mat'));
+for id = 14:15
+imagename = dir(fullfile(inputdir, num2str(id, '%d-*.mat')));
+imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '00332';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
@@ -41,14 +39,7 @@ config.relation = relation;
 config.objmodels = objmodels;
 config.room = room;
 config.spatial = spatial;
-num_layout_sample = 5;
-num_layout_sample_each = 5;
-% compute layouts
-layouts = interval_branch_bound(config, num_layout_sample_each);
-% sample layouts
-layout_samples = sample_layouts(layouts, num_layout_sample);
-if ~exist(outputdir, 'dir')
-    mkdir(outputdir);
-end
-save(fullfile(outputdir, 'layout3d.mat'), 'config', 'layouts', 'layout_samples');
+
+load(fullfile(outputdir, 'layout3d.mat'), 'layouts', 'layout_samples');
 plot_layouts(config, layout_samples, outputdir);
+end
