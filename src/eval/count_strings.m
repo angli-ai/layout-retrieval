@@ -6,7 +6,7 @@ for i = 1:length(inputs)
     assert(length(index) <= 1);
     if isempty(index)
         names = [names inputs{i}];
-        counts = [counts 0];
+        counts = [counts 1];
     else
         counts(index) = counts(index) + 1;
     end

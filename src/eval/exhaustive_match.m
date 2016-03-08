@@ -31,7 +31,6 @@ for i = 1:Nobj
     classname = layout.classname{i};
     classname = fixclassname(classname);
     
-
     x1 = layout.X1(i) * s + x;
     y1 = layout.Y1(i) * s + y;
     x2 = layout.X2(i) * s + x;

@@ -1,11 +1,18 @@
 % eval exhaustive search
 function eval_slidewin_euclid(job_id, num_jobs)
 
+if nargin < 1
+    job_id = 1;
+    num_jobs = 1;
+end
+
+use_gt = true;
+
 input_layout2d = '../3dsolver/output-3/';
+outputdir = 'sunrgbd-output-3-gt';
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-outputdir = 'sunrgbd-output-3-new';
 if ~exist('SUNRGBDMeta', 'var')
     load('detection-box/SUNRGBDMeta.mat');
 end
@@ -32,7 +39,7 @@ for id = 1:length(dirlist)
     if dirlist{id}(1) == '.'
         continue;
     end
-    if mod(id, num_jobs) ~= job_id
+    if mod(id, num_jobs) ~= job_id - 1
         continue;
     end
 %     id = 10;
@@ -40,15 +47,15 @@ for id = 1:length(dirlist)
     imagename = dirlist{id};
     disp(imagename);
     if exist(fullfile(outputdir, [imagename '.mat']), 'file')
-        return;
+        continue;
     end
     inputmat = fullfile(input_layout2d, imagename, 'layout2d.mat');
     if ~exist(inputmat, 'file')
-        return;
+        continue;
     end
     load(inputmat, 'layout2d');
     if isempty(layout2d)
-        return;
+        continue;
     end
 
     index = strfind(imagename, '-');
@@ -74,9 +81,14 @@ for id = 1:length(dirlist)
             rgbpath = fullfile('../../../sunrgbd-dataset/', SUNRGBDMeta(k).rgbpath(18:end));
             I = imread(rgbpath);
         end
-        det = detection.detection{k};
-        index = det.bg_conf < det.conf;
-        det = det(index, :);
+        if use_gt
+            det = gt.gtbbox_test{k};
+            det.conf = ones(size(det, 1));
+        else
+            det = detection.detection{k};
+            index = det.bg_conf < det.conf;
+            det = det(index, :);
+        end
         S = [];
         for i = 1:length(layout2d)
             layout = layout2d{i};

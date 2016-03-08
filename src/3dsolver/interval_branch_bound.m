@@ -17,6 +17,9 @@ end
 
 % set z=0 for grounded objects
 touch_ground = config.relation.support;
+if isempty(find(touch_ground, 1))
+    touch_ground(:) = true;
+end
 for i = 1:size(config.relation.rel, 1)
     switch config.relation.rel{i, 3}
         case {'on', 'on-top-of', 'above'}

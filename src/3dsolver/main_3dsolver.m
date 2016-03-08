@@ -1,7 +1,7 @@
 % 3dsolver main
 
-inputdir = 'testdata-2';
-outputroot = 'output-2';
+inputdir = 'testdata-3';
+outputroot = 'output-3';
 if ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -11,7 +11,7 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '00681';
+imagename = '00392';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 

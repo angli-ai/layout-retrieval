@@ -11,7 +11,7 @@ from nltk.tree import Tree
 
 TEXT_FILE = 'written_text-all.txt'
 TEXT_FILE = 'sunrgbd_text.txt'
-#TEXT_FILE = 'written_text.txt'
+TEXT_FILE = 'written_text.txt'
 
 class StanfordNLP:
     def __init__(self):
@@ -48,6 +48,8 @@ def deterine_noun(loc, noun, dependencies):
     if noun == 'sofa':
         for d in dependencies:
             if 'sofa-%d'%(loc+1) == d[1] and ((d[0]=='amod' and d[2].startswith('triple'))):
+                noun = d[2].split('-')[0] + '-' + noun
+            if 'sofa-%d'%(loc+1) == d[1] and ((d[0]=='amod' and d[2].startswith('double'))):
                 noun = d[2].split('-')[0] + '-' + noun
     if noun == 'table':
         print(loc, noun, dependencies)
@@ -138,6 +140,8 @@ def process_result(result):
                         # is plural
                         if prev_w[1]['PartOfSpeech'].startswith('CD'):
                             noun_cnt[noun_name] = prev_w[1]['NormalizedNamedEntityTag']
+                            if noun_cnt[noun_name][0] == '>':
+                                noun_cnt[noun_name] = noun_cnt[noun_name][1:]
                         elif prev_w[1]['Lemma'] == 'many':
                             noun_cnt[noun_name] = '3'
                         elif prev_w[1]['Lemma'] == 'some':

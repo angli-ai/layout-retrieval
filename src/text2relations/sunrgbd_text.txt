@@ -1,5 +1,5 @@
 1-00024.jpg
-A picture is above a bed. A night stand is on the left side of the head of the bed. A lamp is on the night stand. Another picture is above the lamp. The night stand is actually occluded. A dresser is on the right side of the head of the bed.
+A picture is above a bed. A night stand is on the left side of the head of the bed. A lamp is on the night stand. Another picture is above the lamp. A dresser is on the right side of the head of the bed.
 2-00054.jpg
 There are five chairs. The five chairs are in a row. The chairs are also against the wall.
 3-00015.jpg
@@ -28,14 +28,12 @@ There is a desk. The desk is against the wall. A picture is on the desk. A garba
 A desk is against the wall. A chair is under this desk. Another desk is next to this desk. And another chair is under that desk. That desk is also against the wall.
 15-00321.jpg
 There is a whiteboard above the desk. The desk is against the wall. A chair is next to the desk. Two garbage bins are on the left side of the desk. The garbage bins are side by side.
-00062.jpg
-There is a piano. And a piano bench is in front of the piano.
 00125.jpg
 There is a table. Four chairs are close to the table.
 00150.jpg
 A triple sofa is beside another triple sofa.
 00197.jpg
-Two pillows are on the bed. A night stand is on the right side of the bed. A lamp is  the night stand. A sofa chair is near the rear of the bed.
+Two pillows are on the bed. A night stand is on the right side of the bed. A lamp is  on the night stand. A sofa chair is near the rear of the bed.
 00279.jpg
 There is a table. Three chairs are near the table.
 00332.jpg
@@ -45,15 +43,15 @@ Two chairs are near a table. Another yellow chair is near the table. A farther t
 00346.jpg
 A white board is above two chairs. A table is near the two chairs. Another two chairs are also near the table.
 00352.jpg
-Two monitors are on the desk. A chair is in front of the desk. A garbage bin is on the left side of the desk.
+A chair is in front of the desk. A garbage bin is on the left side of the desk.
 00355.jpg
-A monitor is on the desk. Three chairs are close to the desk.
+Three chairs are close to the desk.
 00369.jpg
 Four chairs are near a desk. Another desk is on the left side of the desk. Another three chairs are close to that desk.
 00381.jpg
-Two monitors are on a desk. A chair is in front of the desk. The desk is against the wall.
+A chair is in front of the desk. The desk is against the wall.
 00382.jpg
-A monitor is on a desk. A chair is near the desk. The other desk is on the right side of the desk. Another chair is in front of the other desk.
+A chair is near the desk. The other desk is on the right side of the desk. Another chair is in front of the other desk.
 00392.jpg
 A mirror is above the sink.
 00404.jpg
@@ -85,7 +83,7 @@ There is a desk. A chair is in front of the desk.
 00640.jpg
 There are six chairs. The six chairs are in a row. The six chairs are also against the wall.
 00647.jpg
-A picture is above the sofa. A table is on the right side of the sofa. The table is against the wall. A chair is in front of the table.
+A picture is above the double sofa. A table is on the right side of the sofa. The table is against the wall. A chair is in front of the table.
 00656.jpg
 A lamp is on a dresser. A night stand is on the right side of the dresser. The night stand is against a wall. Another dresser is on the right side of the night stand. Another night stand is near this dresser. This night stand is against another wall.
 00675.jpg

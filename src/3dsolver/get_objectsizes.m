@@ -23,12 +23,24 @@ for i = 1:length(objectnames)
         objectsizes = [objectsizes; 0.05, 0.5, 0.5, 0.5];
         needsupport = [needsupport, false];
         objectclass = [objectclass, 'picture'];
+    elseif strncmp(objectnames{i}, 'mirror', 6)
+        objectsizes = [objectsizes; 0.05, 0.5, 0.5, 0.5];
+        needsupport = [needsupport, false];
+        objectclass = [objectclass, 'mirror'];
+    elseif strncmp(objectnames{i}, 'sink', 4)
+        objectsizes = [objectsizes; 0.5, 0.5, 0.25, 0.25];
+        needsupport = [needsupport, false];
+        objectclass = [objectclass, 'sink'];
     elseif strncmp(objectnames{i}, 'whiteboard', 10)
         objectsizes = [objectsizes; 0.05, 1, 1, 1];
         needsupport = [needsupport, false];
         objectclass = [objectclass, 'whiteboard'];
     elseif strncmp(objectnames{i}, 'sofa', 4)
         objectsizes = [objectsizes; 0.75, 0.75, 0.5, 1];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'sofa'];
+    elseif strncmp(objectnames{i}, 'double-sofa', 11)
+        objectsizes = [objectsizes; 0.75, 0.75 * 2, 0.5, 0.75];
         needsupport = [needsupport, true];
         objectclass = [objectclass, 'sofa'];
     elseif strncmp(objectnames{i}, 'triple-sofa', 11)
@@ -95,7 +107,7 @@ relation.support = needsupport;
 relation.againstwall = [];
 for i = 1:length(objectclass)
     switch relation.class{i}
-        case {'dresser', 'bed', 'night-stand', 'picture', 'whiteboard'}
+        case {'dresser', 'bed', 'night-stand', 'picture', 'whiteboard', 'mirror', 'sink'}
             relation.againstwall(i) = true;
         otherwise
             relation.againstwall(i) = false;

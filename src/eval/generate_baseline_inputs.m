@@ -1,5 +1,5 @@
 % generate baseline input data
-inputdir = '/Users/ang/projects/layout3d/layout-retrieval/src/3dsolver/testdata-2';
+inputdir = '/Users/ang/projects/layout3d/layout-retrieval/src/3dsolver/testdata-3';
 outputdir = 'baseline-inputs';
 
 if ~exist(outputdir, 'dir')

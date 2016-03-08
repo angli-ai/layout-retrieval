@@ -2,7 +2,10 @@
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-resultdir = 'sunrgbd-output-4';
+resultdir = 'sunrgbd-output-3-new';
+
+resultlist = dir(fullfile(resultdir, '*.mat'));
+resultlist = {resultlist(:).name};
 
 % load ground truth
 detection_dir = fullfile('detection-box', dataset);
@@ -13,7 +16,7 @@ if ~exist('detection', 'var')
 detection = load(fullfile(detection_dir, 'detection_test.mat'));
 end
 
-threshold = 0.5;
+threshold = 0.75;
 ntest = length(gt.gtbbox_test);
 assert(ntest == length(detection.detection));
 
@@ -34,19 +37,34 @@ queries = {};
 
 eps = 1e-9;
 
-for id = 1:21
+for id = 1:length(resultlist)
 %     id = 17;
-    inputmat = dir(fullfile(inputdir, num2str(id, '%d-*.mat')));
-    assert(length(inputmat) == 1);
-    inputmat = inputmat.name;
+    fprintf(1, '%d/%d\n', id, length(resultlist));
+    imagename = resultlist{id};
+%     inputmat = fullfile(inputdir, imagename);
+%     assert(length(inputmat) == 1);
+%     inputmat = inputmat.name;
+    inputmat = imagename;
 
     index = strfind(inputmat, '-');
-    imageid = inputmat(index(1)+1:index(2)-5);
-    imageid = str2num(imageid);
-    queryid = inputmat(1:index(2)-5);
+    queryid = imagename;
+    if isempty(index)
+        index = strfind(inputmat, '.mat');
+        imageid = str2num(inputmat(1:index(end)-1));
+        imagename = (inputmat(1:index(end)-1));
+    else
+%     imageid = inputmat(index(1)+1:index(2)-5);
+%     imageid = str2num(imageid);
+        jj = index(1);
+        index = strfind(inputmat, '.mat');
+        imagename = inputmat(1:index(end)-1);
+        imageid = str2num(inputmat(jj+1:index(end)-1));
+    end
     
-    if exist(fullfile(resultdir, [inputmat(1:index(2)-5) '.mat']), 'file')
-        result = load(fullfile(resultdir, inputmat(1:index(2)-5)));
+    disp(imageid);
+    
+    if exist(fullfile(resultdir, inputmat), 'file')
+        result = load(fullfile(resultdir, inputmat));
         score_res = -max(result.final_score, [], 2);
     else
         score_res = [];
@@ -56,7 +74,7 @@ for id = 1:21
     
     queries = [queries queryid];
 
-    inputdata = load(fullfile(inputdir, inputmat));
+    inputdata = load(fullfile(inputdir, [imagename '.jpg-relation.mat']));
     for i = 1:length(inputdata)
         switch inputdata.classes{i}
             case 'garage-bin'
@@ -106,6 +124,6 @@ for id = 1:21
     end
 end
 h = figure(1);
-tableres = plot_curves({gt_ranks, det_ranks, det_ranks_soft, res_ranks}, ntest, {'gt', 'det', 'det soft', 'det w/ spatial'});
-output = table(queries', gt_ranks', det_ranks', det_ranks_soft', res_ranks');
+tableres = plot_curves({gt_ranks, det_ranks_soft, res_ranks}, ntest, {'gt', 'det', 'det w/ spatial'});
+output = table(queries', gt_ranks', det_ranks_soft', res_ranks');
 saveas(h, 'result.png');
