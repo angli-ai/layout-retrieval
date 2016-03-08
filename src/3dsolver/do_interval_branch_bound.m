@@ -10,15 +10,24 @@ Ndir = length(index);
 
 assert(Ndir < 10, 'support at most 10 directions');
 
-dir_val = uint8(dec2bin(0:(2^(Ndir-1)-1), Ndir)) - uint8('0');
+dir_val = uint8(dec2bin(0:(2^(Ndir)-1), Ndir)) - uint8('0');
+dir_val = dir_val(randperm(size(dir_val, 1)), :);
 
 % enumerate orientations
+num_found = 0;
 for i = 1:size(dir_val, 1)
     X = X0;
     X(index, :) = [dir_val(i, :); dir_val(i, :)]';
     [ok, X] = direction_check_ok(X, config);
     if ok
-        layouts = [layouts, random_interval_analysis(X, config, nsamples)];
+        current_layout = random_interval_analysis(X, config, nsamples);
+        layouts = [layouts current_layout];
+        if ~isempty(current_layout)
+            num_found = num_found + 1;
+            if num_found == nsamples
+                break;
+            end
+        end
     end
 end
 
@@ -294,31 +303,31 @@ for i = 1:Nrel
                 R = ia.and(R, ia.equal(X(obj1*4,:), X(obj2*4,:)));
             end
         case 'left'
-            for k = 1:3
-                R = ia.and(R, ia.le(max(p1(k,:)-datt,p2(k,:)),min(q1(k,:)+datt,q2(k,:))));
-            end
+            d1 = X(obj1*4,:);
+            d2 = X(obj2*4,:);
             if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
-                R = ia.and(R, ia.equal(X(obj1*4,:), X(obj2*4,:)));
+                R = ia.and(R, ia.equal(d1, d2));
             end
-            R = ia.and(R, ia.not(ia.and(ia.le(p1(1, :), p2(1, :)), ia.le(p2(2,:), p1(2, :)))));
-%             R = ia_and(R, ia.lt(x1, x2));
-%             R = ia_and(R, ia.lt(ia.abs(ia.minus(y1, y2)), iUshift));
+            R = ia.and(R, ia.left(p1, q1, d1, p2, q2, d2, dnear));
         case 'right'
-            for k = 1:3
-                R = ia.and(R, ia.le(max(p1(k,:)-dnear,p2(k,:)),min(q1(k,:)+dnear,q2(k,:))));
-            end
+            d1 = X(obj1*4,:);
+            d2 = X(obj2*4,:);
             if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
-                R = ia.and(R, ia.equal(X(obj1*4,:), X(obj2*4,:)));
+                R = ia.and(R, ia.equal(d1, d2));
             end
-            R = ia.and(R, ia.not(ia.and(ia.le(p2(1, :), p1(1, :)), ia.le(p1(2,:), p2(2, :)))));
-%             R = ia_and(R, ia.lt(x2, x1));
-%             R = ia_and(R, ia.lt(ia_abs(ia_minus(y1, y2)), iUshift));
+            if ~config.relation.support(obj1) && ~config.relation.support(obj2)
+                if X(obj1*4,2) == 0
+                    R = ia.and(R, ia.right(p1([1 3]), q1([1 3]), d1, p2([1 3]), q2([1 3]), d2, dnear));
+                elseif X(obj1*4,2) == 1
+                    R = ia.and(R, ia.right(p1([3 2]), q1([3 2]), d2, p2([3 2]), q2([3 2]), d2, dnear));
+                end
+            else
+                R = ia.and(R, ia.right(p1, q1, d1, p2, q2, d2, dnear));
+            end
         case {'in_front_of', 'front'}
-            R = ia.and(R, ia.near(dnear, p1, q1, p2, q2));
-            R = ia.and(R, ia.not(ia.and(ia.le(p1(1, :), p2(1, :)), ia.le(p1(2, :), p2(2, :)))));
+            R = ia.and(R, ia.front(p1, q1, X(obj1*4,:), p2, q2, X(obj2*4,:), dnear));
         case 'behind'
-            R = ia.and(R, ia.near(dnear, p1, q1, p2, q2));
-            R = ia.and(R, ia.not(ia.and(ia.le(p2(1, :), p1(1, :)), ia.le(p2(2, :), p1(2, :)))));        
+            R = ia.and(R, ia.behind(p1, q1, X(obj1*4,:), p2, q2, X(obj2*4,:), dnear));
         case {'side-by-side', 'in-a-row'}
             for k = 1:3
                 R = ia.and(R, ia.lt(max(p1(k,:)-dnear,p2(k,:)),min(q1(k,:)+dnear,q2(k,:))));

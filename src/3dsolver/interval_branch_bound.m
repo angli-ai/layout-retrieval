@@ -60,7 +60,7 @@ for i = 1:Nobj
     if config.relation.againstwall(i)
         directions = [0, 1];
     else
-        directions = [0];
+        directions = [0, 1];
     end
     X0(i*4-2, :) = 0;
     config.x0index = i;

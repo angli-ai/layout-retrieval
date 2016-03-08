@@ -21,7 +21,7 @@ for i = 1:Nlayouts
         c = get_color(config.relation.class{j});
         pts = [];
         switch config.relation.class{j}
-            case {'bed', 'chair', 'sofa', 'desk', 'table'}
+            case {'bed', 'chair', 'sofa', 'desk', 'table', 'piano_bench'}
                 pts2d = [];
                 for k = 1:length(config.objmodels.subobjs)
                     if strncmp(config.objmodels.subobjs{k}, config.relation.class{j}, length(config.relation.class{j}))

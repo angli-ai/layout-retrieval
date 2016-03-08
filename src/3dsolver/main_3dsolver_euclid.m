@@ -1,8 +1,13 @@
 % 3dsolver main
 
+function main_3dsolver_euclid(worker_id, num_workers)
+if nargin < 1
+    worker_id = 1;
+    num_workers = 1;
+end
 inputdir = 'testdata-2';
-outputroot = 'output-2';
-if ~exist(outputroot, 'dir')
+outputroot = 'output-3';
+if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
 
@@ -11,8 +16,17 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '1-00024';
-relation_mat = [imagename '.jpg-relation.mat'];
+% imagename = '1-00024';
+filelist = dir(fullfile(inputdir, '*.mat'));
+filelist = {filelist(:).name};
+for i = 1:length(filelist)
+    if mod(i, num_workers) ~= worker_id - 1
+        continue;
+    end
+    relation_mat = filelist{i};
+    index = strfind(relation_mat, '.jpg-relation');
+    imagename = relation_mat(1:index(1)-1);
+% relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
 relation = load(fullfile(inputdir, relation_mat));
@@ -52,3 +66,4 @@ if ~exist(outputdir, 'dir')
 end
 save(fullfile(outputdir, 'layout3d.mat'), 'config', 'layouts', 'layout_samples');
 plot_layouts(config, layout_samples, outputdir);
+end

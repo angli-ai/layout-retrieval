@@ -26,6 +26,14 @@ chair.leg3 = {'chair:leg3', @(lx,ly,lz,hz)[lx-w,ly-w,o4,o4+w,o4+w,lz]'};
 chair.seat = {'chair:seat', @(lx,ly,lz,hz)[o4,o4,lz-w,lx+w,ly+w,o4+w]'};
 models = add_models(models, 'chair', chair);
 
+pianobench = [];
+pianobench.leg0 = {'piano_bench:leg0', @(lx,ly,lz,hz)[o4,o4,o4,o4+w,o4+w,lz]'};
+pianobench.leg1 = {'piano_bench:leg1', @(lx,ly,lz,hz)[o4,ly-w,o4,o4+w,o4+w,lz]'};
+pianobench.leg2 = {'piano_bench:leg2', @(lx,ly,lz,hz)[lx-w,o4,o4,o4+w,o4+w,lz]'};
+pianobench.leg3 = {'piano_bench:leg3', @(lx,ly,lz,hz)[lx-w,ly-w,o4,o4+w,o4+w,lz]'};
+pianobench.seat = {'piano_bench:seat', @(lx,ly,lz,hz)[o4,o4,lz-w,lx+w,ly+w,o4+w]'};
+models = add_models(models, 'piano_bench', pianobench);
+
 table = [];
 table.leg0 = {'table:leg0', @(lx,ly,lz,hz)[o4,o4,o4,o4+w,o4+w,lz]'};
 table.leg1 = {'table:leg1', @(lx,ly,lz,hz)[o4,ly-w,o4,o4+w,o4+w,lz]'};

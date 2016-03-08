@@ -2,7 +2,7 @@
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-resultdir = 'sunrgbd-output-3';
+resultdir = 'sunrgbd-output-4';
 
 % load ground truth
 detection_dir = fullfile('detection-box', dataset);
@@ -13,7 +13,7 @@ if ~exist('detection', 'var')
 detection = load(fullfile(detection_dir, 'detection_test.mat'));
 end
 
-threshold = 0;
+threshold = 0.5;
 ntest = length(gt.gtbbox_test);
 assert(ntest == length(detection.detection));
 

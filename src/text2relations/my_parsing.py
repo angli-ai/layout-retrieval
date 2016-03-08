@@ -37,9 +37,13 @@ def resolve_coref(sid, wid, visited_states, corefs):
     
 
 def deterine_noun(loc, noun, dependencies):
+    if noun == 'bench':
+        for d in dependencies:
+            if '%s-%d'%(noun, loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('piano'))):
+                noun = d[2].split('-')[0] + '-' + noun
     if noun == 'bin' or noun == 'bins':
         for d in dependencies:
-            if '%s-%d'%(noun, loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('garage'))):
+            if '%s-%d'%(noun, loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('garbage'))):
                 noun = d[2].split('-')[0] + '-' + noun
     if noun == 'sofa':
         for d in dependencies:

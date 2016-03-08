@@ -15,10 +15,10 @@ for i = 1:length(objectnames)
         objectsizes = [objectsizes; 0.1, 0.5, 0.25, 0.25];
         needsupport = [needsupport, true];
         objectclass = [objectclass, 'pillow'];
-    elseif strncmp(objectnames{i}, 'garage-bin', 10)
+    elseif strncmp(objectnames{i}, 'garbage-bin', 10)
         objectsizes = [objectsizes; 0.25, 0.25, 0.5, 0.5];
         needsupport = [needsupport, true];
-        objectclass = [objectclass, 'garage-bin'];
+        objectclass = [objectclass, 'garbage_bin'];
      elseif strncmp(objectnames{i}, 'picture', 7)
         objectsizes = [objectsizes; 0.05, 0.5, 0.5, 0.5];
         needsupport = [needsupport, false];
@@ -39,6 +39,10 @@ for i = 1:length(objectnames)
         objectsizes = [objectsizes; 0.2, 1.0, 0.6, 0.6];
         needsupport = [needsupport, true];
         objectclass = [objectclass, 'tv'];
+    elseif strncmp(objectnames{i}, 'monitor', 7)
+        objectsizes = [objectsizes; 0.1, 0.3, 0.3, 0.3];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'monitor'];
     elseif strncmp(objectnames{i}, 'lamp', 4)
         objectsizes = [objectsizes; 0.25, 0.25, 0.5, 0.5];
         needsupport = [needsupport, true];
@@ -62,7 +66,19 @@ for i = 1:length(objectnames)
     elseif strncmp(objectnames{i}, 'night-stand', 11)
         objectsizes = [objectsizes; 0.5, 0.5, 0.75, 0.75];
         needsupport = [needsupport, true];
-        objectclass = [objectclass, 'night-stand'];
+        objectclass = [objectclass, 'night_stand'];
+    elseif strncmp(objectnames{i}, 'box', 3)
+        objectsizes = [objectsizes; 0.5, 0.5, 0.5, 0.5];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'box'];
+    elseif strncmp(objectnames{i}, 'piano-bench', 11)
+        objectsizes = [objectsizes; 0.5, 1.0, 0.5, 0.5];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'piano_bench'];
+    elseif strncmp(objectnames{i}, 'piano', 5)
+        objectsizes = [objectsizes; 1.0, 1.8, 1.0, 1.0];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'piano'];
     else % default size
         objectsizes = [objectsizes; 0.5, 0.5, 0.5, 0.5];
         needsupport = [needsupport, true];
