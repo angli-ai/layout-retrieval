@@ -29,11 +29,8 @@ score = zeros(1, Ngrids);
 prev_classname = '';
 for i = 1:Nobj
     classname = layout.classname{i};
-    if strcmp(classname, 'garage-bin')
-        classname = 'garbage_bin'; % fix error
-    else
-        classname(strfind(classname, '-')) = '_';
-    end
+    classname = fixclassname(classname);
+    
 
     x1 = layout.X1(i) * s + x;
     y1 = layout.Y1(i) * s + y;

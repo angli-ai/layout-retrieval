@@ -6,7 +6,7 @@ nquery = 21;
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-outputdir = 'sunrgbd-output-3';
+outputdir = 'sunrgbd-output-4';
 if ~exist('SUNRGBDMeta', 'var')
     load('detection-box/SUNRGBDMeta.mat');
 end
