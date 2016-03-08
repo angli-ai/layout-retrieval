@@ -1,5 +1,5 @@
 % eval exhaustive search
-function eval_slidewin_euclid(id)
+function eval_slidewin_euclid(job_id, num_jobs)
 
 input_layout2d = '../3dsolver/output-ramawks-2/';
 
@@ -27,6 +27,10 @@ end
 
 visualize = false;
 
+for id = 1:nquery
+    if mod(id, num_jobs) ~= job_id
+        continue;
+    end
 %     id = 10;
     inputmat = dir(fullfile(input_layout2d, num2str(id, '%d-*')));
     assert(length(inputmat) == 1);
@@ -107,3 +111,4 @@ visualize = false;
     save(fullfile(outputdir, imagename), 'final_score');
 %     break;
 % break;
+end
