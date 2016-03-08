@@ -50,6 +50,7 @@ for i = 1:Nobj
         dup = false;
         valid = ones(Ncandid, Ngrids);
     end
+    prev_classname = classname;
     pick = zeros(1, Ngrids);
     for jj = 1:length(index)
         j = index(jj);

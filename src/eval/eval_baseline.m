@@ -2,7 +2,7 @@
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-resultdir = 'sunrgbd-output-2';
+resultdir = 'sunrgbd-output-3';
 
 % load ground truth
 detection_dir = fullfile('detection-box', dataset);
@@ -13,7 +13,7 @@ if ~exist('detection', 'var')
 detection = load(fullfile(detection_dir, 'detection_test.mat'));
 end
 
-threshold = 0.5;
+threshold = 0;
 ntest = length(gt.gtbbox_test);
 assert(ntest == length(detection.detection));
 
@@ -32,7 +32,10 @@ det_ranks = [];
 det_ranks_soft = [];
 queries = {};
 
+eps = 1e-9;
+
 for id = 1:21
+%     id = 17;
     inputmat = dir(fullfile(inputdir, num2str(id, '%d-*.mat')));
     assert(length(inputmat) == 1);
     inputmat = inputmat.name;
@@ -55,8 +58,11 @@ for id = 1:21
 
     inputdata = load(fullfile(inputdir, inputmat));
     for i = 1:length(inputdata)
-        if strcmp(inputdata.classes{i}, 'garage-bin')
-            inputdata.classes{i} = 'garbage_bin';
+        switch inputdata.classes{i}
+            case 'garage-bin'
+                inputdata.classes{i} = 'garbage_bin';
+            case 'triple-sofa'
+                inputdata.classes{i} = 'sofa';
         end
         inputdata.classes{i}(strfind(inputdata.classes{i}, '-')) = '_';
     end
