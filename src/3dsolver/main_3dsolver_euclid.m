@@ -5,7 +5,7 @@ if nargin < 1
     worker_id = 1;
     num_workers = 1;
 end
-inputdir = 'testdata-2';
+inputdir = 'testdata-3';
 outputroot = 'output-3';
 if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
@@ -28,6 +28,10 @@ for i = 1:length(filelist)
     imagename = relation_mat(1:index(1)-1);
 % relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
+
+if exist(outputdir, 'dir')
+    continue;
+end
 
 relation = load(fullfile(inputdir, relation_mat));
 
@@ -55,6 +59,8 @@ config.relation = relation;
 config.objmodels = objmodels;
 config.room = room;
 config.spatial = spatial;
+global starttime
+starttime = tic;
 num_layout_sample = 5;
 num_layout_sample_each = 5;
 % compute layouts

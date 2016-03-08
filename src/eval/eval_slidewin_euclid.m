@@ -1,13 +1,11 @@
 % eval exhaustive search
 function eval_slidewin_euclid(job_id, num_jobs)
 
-input_layout2d = '../3dsolver/output-ramawks-2/';
-
-nquery = 21;
+input_layout2d = '../3dsolver/output-3/';
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-outputdir = 'sunrgbd-output-3';
+outputdir = 'sunrgbd-output-3-new';
 if ~exist('SUNRGBDMeta', 'var')
     load('detection-box/SUNRGBDMeta.mat');
 end
@@ -27,18 +25,24 @@ end
 
 visualize = false;
 
-for id = 1:nquery
+dirlist = dir(fullfile(input_layout2d, '*'));
+dirlist = {dirlist(:).name};
+
+for id = 1:length(dirlist)
+    if dirlist{id}(1) == '.'
+        continue;
+    end
     if mod(id, num_jobs) ~= job_id
         continue;
     end
 %     id = 10;
-    inputmat = dir(fullfile(input_layout2d, num2str(id, '%d-*')));
-    assert(length(inputmat) == 1);
-    imagename = inputmat.name;
+    %assert(length(inputmat) == 1);
+    imagename = dirlist{id};
+    disp(imagename);
     if exist(fullfile(outputdir, [imagename '.mat']), 'file')
         return;
     end
-    inputmat = fullfile(input_layout2d, inputmat.name, 'layout2d.mat');
+    inputmat = fullfile(input_layout2d, imagename, 'layout2d.mat');
     if ~exist(inputmat, 'file')
         return;
     end
@@ -48,7 +52,11 @@ for id = 1:nquery
     end
 
     index = strfind(imagename, '-');
-    gt_index = str2num(imagename(index(1)+1:end));
+    if isempty(index)
+        gt_index = str2num(imagename);
+    else
+        gt_index = str2num(imagename(index(1)+1:end));
+    end
 
     match_config = [];
     match_config.n_scale = 5;

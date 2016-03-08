@@ -73,6 +73,7 @@ for i = 1:Nobj
     end
 end
 
+global starttime
 % two objects attached to the walls
 for i = 1:Nobj
     if ~touch_ground(i), continue; end
@@ -89,6 +90,10 @@ for i = 1:Nobj
     for j = 1:Nobj
         if i == j, continue, end
         if ~touch_ground(j), continue; end
+        tcost = toc(starttime);
+        if tcost > 10000
+            break;
+        end
         % if obj_j with x = 0
         X1 = X0;
         config.x0index = j;

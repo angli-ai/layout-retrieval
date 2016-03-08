@@ -11,11 +11,11 @@
 ### Set the queue for this job as windfall or standard (adjust ### and #)
 ##PBS -q longnarrow
 ##PBS -q matlab-long
-#PBS -q octaque
+##PBS -q octaque
 ##PBS -q matlab
 ##PBS -q dque
 ##PBS -q matlab-wide
-##PBS -q shortwide
+#PBS -q shortwide
 
 ### Set the jobtype for this job (serial, small_mpi, small_smp, large_mpi, large_smp)
 ### jobtype=serial submits to htc and can be automatically moved to cluster and smp
@@ -24,10 +24,10 @@
 ### Set the number of cores (cpus) and memory that will be used for this job
 ### When specifying memory request slightly less than 2GB memory per ncpus for standard node
 ### Some memory needs to be reserved for the Linux system processes
-#PBS -l nodes=4:ppn=6
+#PBS -l nodes=5:ppn=8
 
 ### Specify "wallclock time" required for this job, hhh:mm:ss
-#PBS -l walltime=08:00:00
+#PBS -l walltime=04:00:00
 
 ### Specify total cpu time required for this job, hhh:mm:ss
 ### total cputime = walltime * ncpus

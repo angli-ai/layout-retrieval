@@ -11,11 +11,11 @@ jobname=$2
 echo "Hello from $PBS_NODENUM $PBS_VNODENUM, $#, num_workers=$num_workers"
 
 if [ -z $matlabsrc ]; then
-	matlabsrc="/gleuclid/angli/casia-webface/src"
+	matlabsrc="/gleuclid/angli/layout-retrieval/src/eval"
 fi
 
 #default: rootpath=/gleuclid/angli/aaproj/
-WORKDIR="/gleuclid/angli/casia-webface/"
+WORKDIR="/gleuclid/angli/layout-retrieval/src/eval"
 #cd $WORKDIR/..
 if [ -z "$PBS_VNODENUM" ]; then
 	PBS_VNODENUM=0
@@ -29,7 +29,7 @@ logfile=$WORKDIR/pbs/$jobname/$jobname.o$node_id
 echo $host > $logfile
 
 cd $matlabsrc
-matlab=/opt/common/matlab-r2014a/bin/matlab
+matlab=/opt/common/matlab-r2015a/bin/matlab
 
 prefix=""
 matlab_func="$jobname($(($node_id+1)), $num_workers)"
