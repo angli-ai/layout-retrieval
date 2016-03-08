@@ -74,7 +74,8 @@ while N > 0 && length(layouts) < nsamples
     X = shrink(X, boundmap, unit);
     [X, R] = shrink_and_feasible(config, X, unit);
     [maxdiff, index] = max(X(:, 2) - X(:, 1));
-    fprintf(1, 'q.size = %d, maxdiff = %.2f\n', N, maxdiff);
+    fprintf(1, 'q.size = %d, maxdiff = %.2f, #layouts = %d\n', N, maxdiff, length(layouts));
+%     fprintf(1, 'q.size = %d, maxdiff = %.2f\n', N, maxdiff);
     if vector_eq(R, [1, 1])
         % feasible
         layouts = [layouts X];
@@ -161,7 +162,7 @@ while ~q.isEmpty()
     X = shrink(X, boundmap, unit);
     [X, R] = shrink_and_feasible(config, X, unit);
     [maxdiff, index] = max(X(:, 2) - X(:, 1));
-    fprintf(1, 'q.size = %d, maxdiff = %.2f\n', q.size, maxdiff);
+    fprintf(1, 'q.size = %d, maxdiff = %.2f, #layouts\n', q.size, maxdiff, length(layouts));
     if vector_eq(R, [1, 1])
         % feasible
         layouts = [layouts X];

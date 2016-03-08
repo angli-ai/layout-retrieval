@@ -11,7 +11,7 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '1-00024';
+imagename = '00681';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 

@@ -21,16 +21,13 @@ There are three garbage bins in a row.
 11-00266.jpg
 There is a triple sofa. The sofa is against the wall. A chair is next to the sofa. And the chair is also against the wall. Two pictures are above the sofa. And another picture is above the chair.
 12-00294.jpg
-There is a table. The table is against the wall. A box is on the table. There are three chairs. The chairs are next to the table. The chairs are also in a row.
+There is a table. The table is against the wall. A box is on the table. There are three chairs. The chairs are near the table. The chairs are also in a row.
 13-00302.jpg
 There is a desk. The desk is against the wall. A picture is on the desk. A garbage bin is on the left side of the desk. Another longer desk is on the right side of the desk. Two chairs are under the longer desk. The longer desk is also against the wall.
 14-00309.jpg
 A desk is against the wall. A chair is under this desk. Another desk is next to this desk. And another chair is under that desk. That desk is also against the wall.
 15-00321.jpg
 There is a whiteboard above the desk. The desk is against the wall. A chair is next to the desk. Two garbage bins are on the left side of the desk. The garbage bins are side by side.
-
-
-
 00062.jpg
 There is a piano. And a piano bench is in front of the piano.
 00125.jpg
@@ -90,11 +87,11 @@ There are six chairs. The six chairs are in a row. The six chairs are also again
 00647.jpg
 A picture is above the sofa. A table is on the right side of the sofa. The table is against the wall. A chair is in front of the table.
 00656.jpg
-A lamp is on a dresser. A night stand is on the right side of the dresser. The night stand is against a wall. Another dresser is on the right side of the night stand. Another night stand is on the right side of the dresser. This night stand is against another wall.
+A lamp is on a dresser. A night stand is on the right side of the dresser. The night stand is against a wall. Another dresser is on the right side of the night stand. Another night stand is near this dresser. This night stand is against another wall.
 00675.jpg
 A TV is next to another TV.
 00681.jpg
-A dresser is near another dresser. A night stand is next to the dresser. A bed is next to the night stand. Another night stand is on the right side of the bed. A lamp is on the night stand. Another dresser is on the right side of the night stand. And a picture is above the dresser.
+A dresser is near another dresser. A night stand is next to the dresser. A bed is next to the night stand. Another night stand is on the right side of the bed. A lamp is on the night stand. Another dresser is on the right side of the night stand. And a picture is above this dresser.
 00731.jpg
 Some pillows are on the bed. A picture is above the bed. A dresser is on the left side of the bed. The dresser is against the wall. A lamp is on the dresser. A night stand is on the right side of the head of the bed. Another lamp is on the night stand.
 00741.jpg

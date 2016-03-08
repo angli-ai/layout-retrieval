@@ -51,6 +51,10 @@ for i = 1:length(objectnames)
         objectsizes = [objectsizes; 0.25, 1.5, 1.0, 1.0];
         needsupport = [needsupport, true];
         objectclass = [objectclass, 'dresser'];
+    elseif strncmp(objectnames{i}, 'cabinet', 7)
+        objectsizes = [objectsizes; 0.5, 1.0, 0.5, 0.5];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'cabinet'];
     elseif strncmp(objectnames{i}, 'chair', 5)
         objectsizes = [objectsizes; 0.5, 0.5, 0.5, 1.0];
         needsupport = [needsupport, true];
