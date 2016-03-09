@@ -29,7 +29,8 @@ for i = 1:ntest
     det_counts_soft{i} = count_strings_conf(detection.detection{i});
 end
 
-res_ranks = [];
+res_ranks_mean = [];
+res_ranks_max = [];
 gt_ranks = [];
 det_ranks = [];
 det_ranks_soft = [];
@@ -67,7 +68,8 @@ for id = 1:length(resultlist)
     
     if exist(fullfile(resultdir, inputmat), 'file')
         result = load(fullfile(resultdir, inputmat));
-        score_res = -max(result.final_score, [], 2);
+        score_res_mean = -mean(result.final_score, 2);
+        score_res_max = -max(result.final_score, [], 2);
     else
         score_res = [];
         continue;
@@ -117,15 +119,19 @@ for id = 1:length(resultlist)
     det_ranks_soft = [det_ranks_soft round((sum(score_det_soft < score - eps) + 1+ sum(score_det_soft < score + eps)) / 2)];
     
     if ~isempty(score_res)
-        score = score_res(imageid);
+        score = score_res_mean(imageid);
         rank = round((sum(score_res < score - eps) + 1 + sum(score_res < score + eps)) / 2);
 %         [~, rank] = sort(score_res(A));
 %         [~, rank] = sort(rank);
 %         res_ranks = [res_ranks rank(B(imageid))];
-        res_ranks = [res_ranks rank];
+        res_ranks_mean = [res_ranks_mean rank];
+        
+        score = score_res_max(imageid);
+        rank = round((sum(score_res < score - eps) + 1 + sum(score_res < score + eps)) / 2);
+        res_ranks_max = [res_ranks_max rank];
     end
 end
 h = figure(1);
-tableres = plot_curves({gt_ranks, det_ranks_soft, res_ranks}, ntest, {'gt', 'det', 'det w/ spatial'});
-output = table(queries', gt_ranks', det_ranks_soft', res_ranks');
-saveas(h, 'result.png');
+tableres = plot_curves({gt_ranks, det_ranks, det_ranks_soft, res_ranks_mean, res_ranks_max}, ntest, {'gt', 'det', 'det soft', 'ours mean', 'ours max'});
+output = table(queries', gt_ranks', det_ranks', det_ranks_soft', res_ranks_mean', res_ranks_max');
+saveas(h, ['result.png']);

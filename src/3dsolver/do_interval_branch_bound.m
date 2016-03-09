@@ -85,7 +85,13 @@ while N > 0 && length(layouts) < nsamples
     X = shrink(X, boundmap, unit);
     [X, R] = shrink_and_feasible(config, X, unit);
     [maxdiff, index] = max(X(:, 2) - X(:, 1));
+    if ~isempty(find(X(:, 2) < X(:, 1), 1))
+        continue;
+    end
     fprintf(1, 'q.size = %d, maxdiff = %.2f, #layouts = %d\n', N, maxdiff, length(layouts));
+    if maxdiff < 0.4
+        disp(X);
+    end
 %     fprintf(1, 'q.size = %d, maxdiff = %.2f\n', N, maxdiff);
     if vector_eq(R, [1, 1])
         % feasible

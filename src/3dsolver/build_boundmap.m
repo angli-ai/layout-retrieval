@@ -3,8 +3,8 @@ Nrel = size(config.relation.rel, 1);
 Nobj = length(config.relation.class);
 lb = zeros(3, Nobj, Nobj);
 ub = zeros(3, Nobj, Nobj);
-lb(:) = -inf;
-ub(:) = inf;
+lb(:) = -max(config.room.length, config.room.width);
+ub(:) = max(config.room.length, config.room.width);
 
 for i = 1:Nobj
     lb(:, i, i) = 0;
@@ -20,17 +20,57 @@ for i = 1:Nrel
     rel = semantic{3};
 %     [p1, q1] = get_coords(config, semantic{1}, obj1, X(obj1*4, :), X((obj1-1)*4+(1:3),:));
 %     [p2, q2] = get_coords(config, semantic{2}, obj2, X(obj2*4, :), X((obj2-1)*4+(1:3),:));
-    s1 = get_dir_objsize(config, obj1, X(obj1*4, :));
+    [s1, o1] = get_dir_objsize(config, semantic{1}, obj1, X(obj1*4, :));
     if iscell(semantic{2})
         continue;
     else
         obj2 = get_objectid(semantic{2}, config.relation.nouns);
-        s2 = get_dir_objsize(config, obj2, X(obj2*4, :));
+        [s2, o2] = get_dir_objsize(config, semantic{2}, obj2, X(obj2*4, :));
     end
     switch rel
-        case {'near', 'next-to', 'close-to', 'left', 'right', 'in_front_of', 'front', 'behind'}
+        case {'near', 'next-to', 'close-to', 'behind'}
             lb(:, obj1, obj2) = max(lb(:, obj1, obj2), -s1(1:3)-dnear);
             ub(:, obj1, obj2) = min(ub(:, obj1, obj2), s2(1:3)+dnear);
+        case {'in_front_of', 'front'}
+            % has to be close
+            lb(:, obj1, obj2) = max(lb(:, obj1, obj2), -s1(1:3)-dnear);
+            ub(:, obj1, obj2) = min(ub(:, obj1, obj2), s2(1:3)+dnear);
+            % 
+            if vector_eq(X(obj2*4, :), [0 0])
+                % y1 > y2+o2+s2 => y1 - y2 > o2+s2
+                lb(2, obj1, obj2) = max(lb(2, obj1, obj2), o2(2) + s2(2));
+            elseif vector_eq(X(obj2*4, :), [1 1])
+                % x1 - x2 > ox2 + sx2
+                lb(1, obj1, obj2) = max(lb(1, obj1, obj2), o2(1) + s2(1));
+            end
+        case 'right'
+            lb(:, obj1, obj2) = max(lb(:, obj1, obj2), -s1(1:3)-dnear);
+            ub(:, obj1, obj2) = min(ub(:, obj1, obj2), s2(1:3)+dnear);
+            if vector_eq(X(obj2*4, :), [0 0])
+                % x1 +  sx1 < x2 + ox2 => x1 - x2 < ox2-sx1
+                ub(1, obj1, obj2) = min(ub(1, obj1, obj2), o2(1)-s1(1));
+                % y1 <= y2 + oy2 + sy2 => y1 - y2 < oy2+sy2
+                ub(2, obj1, obj2) = min(ub(2, obj1, obj2), o2(2)+s2(2));
+            elseif vector_eq(X(obj2*4, :), [1 1])
+                % y1 > y2 + oy2 + sy2 => y1 - y2 > oy2 + sy2
+                lb(2, obj1, obj2) = max(lb(2, obj1, obj2), o2(2) + s2(2));
+                % x1 <= x2 + ox2 + sx2 => x1 - x2 < ox2+sx2
+                ub(1, obj1, obj2) = min(ub(1, obj1, obj2), o2(1)+s2(1));
+            end
+        case 'left'
+            lb(:, obj1, obj2) = max(lb(:, obj1, obj2), -s1(1:3)-dnear);
+            ub(:, obj1, obj2) = min(ub(:, obj1, obj2), s2(1:3)+dnear);
+            if vector_eq(X(obj2*4, :), [0 0])
+                % x1 > x2 + ox2 + sx2 => x1 - x2 > ox2 + sx2
+                lb(1, obj1, obj2) = max(lb(1, obj1, obj2), o2(1) + s2(1));
+                % y1 <= y2 + oy2 + sy2 => y1 - y2 < oy2+sy2
+                ub(2, obj1, obj2) = min(ub(2, obj1, obj2), o2(2)+s2(2));
+            elseif vector_eq(X(obj2*4, :), [1 1])
+                % y1 + sy1 < oy2 + y2 => y1 - y2 < oy2 -sy1
+                ub(2, obj1, obj2) = min(ub(2, obj1, obj2), o2(2)-s1(2));
+                % x1 <= x2 + ox2 + sx2 => x1 - x2 < ox2+sx2
+                ub(1, obj1, obj2) = min(ub(1, obj1, obj2), o2(1)+s2(1));
+            end
         case 'attach'
             lb(:, obj1, obj2) = max(lb(:, obj1, obj2), -s1(1:3)-datt);
             ub(:, obj1, obj2) = min(ub(:, obj1, obj2), s2(1:3)+datt);
@@ -50,8 +90,9 @@ for i = 1:Nrel
         case {'on'}
             lb(3, obj1, obj2) = max(lb(3, obj1, obj2), s2(4));
             ub(3, obj1, obj2) = min(ub(3, obj1, obj2), s2(4));
-            lb(1:2, obj1, obj2) = max(lb(1:2, obj1, obj2), 0);
-            ub(1:2, obj1, obj2) = min(ub(1:2, obj1, obj2), -s1(1:2)+s2(1:2));
+            % the center is on
+            lb(1:2, obj1, obj2) = max(lb(1:2, obj1, obj2), -s1(1:2)/2);
+            ub(1:2, obj1, obj2) = min(ub(1:2, obj1, obj2), -s1(1:2)/2+s2(1:2));
             
         case {'under'}
             lb(1:2, obj1, obj2) = max(lb(1:2, obj1, obj2), -s1(1:2));

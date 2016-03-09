@@ -1,7 +1,7 @@
 % 3dsolver main
 
 inputdir = 'relations-3dgp';
-outputroot = 'output-3dgp';
+outputroot = 'output-3dgp-mac';
 if ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -11,7 +11,7 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '292';
+imagename = '289';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
