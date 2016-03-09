@@ -10,9 +10,9 @@ from pprint import pprint
 from nltk.tree import Tree
 
 TEXT_FILE = 'written_text-all.txt'
-TEXT_FILE = 'written_text.txt'
 TEXT_FILE = '3dgp_text.txt'
 TEXT_FILE = 'sunrgbd_text.txt'
+TEXT_FILE = 'written_text.txt'
 
 class StanfordNLP:
     def __init__(self):

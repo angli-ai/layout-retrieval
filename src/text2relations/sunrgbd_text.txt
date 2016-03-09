@@ -77,7 +77,7 @@ Two monitors are on a table. A middle table is next to the table. Another table 
 00542.jpg
 A triple sofa is near the table. Three chairs are also near the table.
 00560.jpg
-A chair is under the left desk. Another chair is under the middle desk. Another chair is under the right desk. The middle desk is on the right side of the left desk. And the middle desk is on the left side of the right desk. The middle desk is against the wall. The left desk is also against the wall.
+A chair is under the first desk. Another chair is under the second desk. Another chair is under the third desk. The second desk is on the right side of the first desk. And the second desk is on the left side of the third desk. The first desk is against the wall. The second desk is also against the wall.
 00622.jpg
 There is a desk. A chair is in front of the desk.
 00640.jpg

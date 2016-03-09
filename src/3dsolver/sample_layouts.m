@@ -1,15 +1,35 @@
-function output = sample_layouts(layouts, num)
+function output = sample_layouts(config, layouts, num)
 % method: random
+assert(~isempty(layouts));
+while length(layouts) < num
+    layouts = [layouts, layouts];
+end
 Nlayouts = length(layouts);
-num = min(Nlayouts, num);
 index = randperm(Nlayouts, num);
 output = {};
+
 for i = 1:num
     l = layouts{index(i)};
+    % solve camera direction
+    Nobj = length(config.relation.nouns);
+    mincam = 0;
+    maxcam = 90;
+    for j = 1:Nobj
+        switch config.relation.class{j}
+            case {'picture', 'door', 'mirror', 'whiteboard', 'tv'}
+                if l(j*4, :) == 0
+                    mincam = max(mincam, 30);
+                    maxcam = min(maxcam, 90);
+                elseif l(j*4, 1) == 1
+                    mincam = max(mincam, 0);
+                    maxcam = min(maxcam, 60);
+                end
+        end
+    end
     Ndim = size(l, 1);
     l = l(:, 1) + rand(Ndim, 1) .* (l(:, 2) - l(:, 1));
     % camera orientation
-    ax = rand * 90;
+    ax = rand * (maxcam - mincam) + mincam;
     az = normrnd(30, 10);
     dist = rand * 5 + 5;
     

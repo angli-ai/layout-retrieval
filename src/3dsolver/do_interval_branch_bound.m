@@ -248,7 +248,7 @@ for i = 1:Nrel
 end
 
 
-R = [];
+R = [1, 1];
 % check bounds
 Nobj = length(config.relation.nouns);
 for i = 1:Nobj
@@ -316,7 +316,7 @@ for i = 1:Nrel
         q2 = p2; z2 = [inf, -inf];
         for j = 1:length(semantic{2})
             obj2j = get_objectid(semantic{2}{j}, config.relation.nouns);
-            [p2j, q2j, z2j] = get_coords(config, semantic{2}{j}, obj2, X(obj2*4, :), X((obj2-1)*4+(1:3),:));
+            [p2j, q2j, z2j] = get_coords(config, semantic{2}{j}, obj2j, X(obj2j*4, :), X((obj2j-1)*4+(1:3),:));
             p2(:, 1) = min(p2(:, 1), p2j(:, 1));
             p2(:, 2) = max(p2(:, 2), p2j(:, 2));
             q2(:, 1) = min(q2(:, 1), q2j(:, 1));
@@ -362,9 +362,9 @@ for i = 1:Nrel
 %             end
             if ~config.relation.support(obj1) && ~config.relation.support(obj2)
                 if X(obj1*4,2) == 0
-                    R = ia.and(R, ia.right(p1([1 3]), q1([1 3]), d1, p2([1 3]), q2([1 3]), d2, dnear));
+                    R = ia.and(R, ia.right(p1([1 3 2],:), q1([1 3 2],:), d1, p2([1 3 2],:), q2([1 3 2],:), d2, dnear));
                 elseif X(obj1*4,2) == 1
-                    R = ia.and(R, ia.right(p1([3 2]), q1([3 2]), d2, p2([3 2]), q2([3 2]), d2, dnear));
+                    R = ia.and(R, ia.right(p1([3 2 1],:), q1([3 2 1],:), d2, p2([3 2 1],:), q2([3 2 1],:), d2, dnear));
                 end
             else
                 R = ia.and(R, ia.right(p1, q1, d1, p2, q2, d2, dnear));
