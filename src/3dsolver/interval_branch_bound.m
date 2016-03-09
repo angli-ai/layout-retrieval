@@ -95,7 +95,7 @@ for i = 1:Nobj
         if i == j, continue, end
         if ~touch_ground(j), continue; end
         tcost = toc(starttime);
-        if tcost > 10000
+        if tcost > 25000
             break;
         end
         % if obj_j with x = 0

@@ -5,8 +5,8 @@ if nargin < 1
     worker_id = 1;
     num_workers = 1;
 end
-inputdir = 'testdata-3';
-outputroot = 'output-3';
+inputdir = 'relations-sunrgbd';
+outputroot = 'output-sunrgbd';
 if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -62,7 +62,7 @@ config.spatial = spatial;
 global starttime
 starttime = tic;
 num_layout_sample = 5;
-num_layout_sample_each = 5;
+num_layout_sample_each = 1;
 % compute layouts
 layouts = interval_branch_bound(config, num_layout_sample_each);
 % sample layouts
