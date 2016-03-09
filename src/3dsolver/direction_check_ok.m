@@ -20,13 +20,13 @@ ok = true;
 for i = 1:Nrel
     switch config.relation.rel{i, 3}
         case {'left', 'right'}
-            id1 = get_objectid(config.relation.rel{i, 1}, config.relation.nouns);
-            id2 = get_objectid(config.relation.rel{i, 2}, config.relation.nouns);
-            if config.relation.againstwall(id1) && config.relation.againstwall(id2) ...
-                    && ~vector_eq(X(id1*4, :), X(id2*4, :))
-                ok = false;
-                return;
-            end
+%             id1 = get_objectid(config.relation.rel{i, 1}, config.relation.nouns);
+%             id2 = get_objectid(config.relation.rel{i, 2}, config.relation.nouns);
+%             if config.relation.againstwall(id1) && config.relation.againstwall(id2) ...
+%                     && ~vector_eq(X(id1*4, :), X(id2*4, :))
+%                 ok = false;
+%                 return;
+%             end
         case {'on', 'side-by-side', 'in-a-row', 'next-to'}
             id1 = get_objectid(config.relation.rel{i, 1}, config.relation.nouns);
             id2 = get_objectid(config.relation.rel{i, 2}, config.relation.nouns);

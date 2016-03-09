@@ -10,8 +10,9 @@ from pprint import pprint
 from nltk.tree import Tree
 
 TEXT_FILE = 'written_text-all.txt'
-TEXT_FILE = 'sunrgbd_text.txt'
 TEXT_FILE = 'written_text.txt'
+TEXT_FILE = '3dgp_text.txt'
+TEXT_FILE = 'sunrgbd_text.txt'
 
 class StanfordNLP:
     def __init__(self):
@@ -55,7 +56,8 @@ def deterine_noun(loc, noun, dependencies):
         print(loc, noun, dependencies)
         for d in dependencies:
             if 'table-%d'%(loc+1) == d[1] and ((d[0]=='nn' and d[2].startswith('side')) or
-                                               (d[0]=='nn' and d[2].startswith('dining'))): 
+                                               (d[0]=='nn' and d[2].startswith('dining')) or
+                                               (d[0]=='amod' and d[2].startswith('long'))): 
                 noun = d[2].split('-')[0] + '-' + noun
     elif noun == 'stand':
         print(loc, noun, dependencies)
@@ -253,7 +255,7 @@ def process_result(result):
                     print(cnt, sub, mapped_obj, rel)
     nouns = list(set(nouns))
 
-    nouns_in_relations = [x[0] for x in relations] + [x[1] for x in relations]
+    nouns_in_relations = [x[0].split(':')[0] for x in relations] + [x[1].split(':')[0] for x in relations]
     nouns = [x for x in nouns if x in nouns_in_relations]
     noun_cnt = { mykey: noun_cnt[mykey] for mykey in nouns }
     return relations, nouns, noun_cnt

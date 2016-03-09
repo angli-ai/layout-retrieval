@@ -70,3 +70,11 @@ end
 
 % get regular object dimensions
 new_relation = get_objectsizes(new_relation);
+new_relation.multidir = zeros(1, length(new_relation.nouns));
+for i = 1:size(new_relation.rel, 1)
+    if strcmp(new_relation.rel{i, 3}, 'under') ...
+            && strncmp(new_relation.rel{i, 1}, 'chair', 5)
+        id = get_objectid(new_relation.rel{i, 1}, new_relation.nouns);
+        new_relation.multidir(id) = 1;
+    end
+end

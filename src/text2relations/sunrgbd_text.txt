@@ -41,7 +41,7 @@ A sofa chair is near the double sofa. An end table is in front of the double sof
 00334.jpg
 Two chairs are near a table. Another yellow chair is near the table. A farther table is near the table. And the farther table is near the yellow chair.
 00346.jpg
-A white board is above two chairs. A table is near the two chairs. Another two chairs are also near the table.
+A whiteboard is above two chairs. A table is near the two chairs. Another two chairs are also near the table.
 00352.jpg
 A chair is in front of the desk. A garbage bin is on the left side of the desk.
 00355.jpg
@@ -94,3 +94,11 @@ A dresser is near another dresser. A night stand is next to the dresser. A bed i
 Some pillows are on the bed. A picture is above the bed. A dresser is on the left side of the bed. The dresser is against the wall. A lamp is on the dresser. A night stand is on the right side of the head of the bed. Another lamp is on the night stand.
 00741.jpg
 A night stand is near the rear of the bed. A lamp is on the night stand. Some pillows are on the bed. The dresser is on the right side of the bed. The dresser is against the wall. A door is on the right side of the dresser.
+00751.jpg
+Six pillows are on a triple sofa.
+00765.jpg
+Some pillows are on a double sofa. A mirror is above the sofa.
+00781.jpg
+Two boxes are in front of the bed. Some pillows are on the bed. A dresser is on the left side of the bed. Two lamps are on the dresser.
+00803.jpg
+Six chairs are under a long table.

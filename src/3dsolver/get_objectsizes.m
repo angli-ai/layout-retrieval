@@ -23,6 +23,10 @@ for i = 1:length(objectnames)
         objectsizes = [objectsizes; 0.05, 0.5, 0.5, 0.5];
         needsupport = [needsupport, false];
         objectclass = [objectclass, 'picture'];
+    elseif strncmp(objectnames{i}, 'door', 4)
+        objectsizes = [objectsizes; 0.05, 1.0, 2.0, 2.0];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'door'];
     elseif strncmp(objectnames{i}, 'mirror', 6)
         objectsizes = [objectsizes; 0.05, 0.5, 0.5, 0.5];
         needsupport = [needsupport, false];
@@ -75,6 +79,14 @@ for i = 1:length(objectnames)
         objectsizes = [objectsizes; 0.8, 0.8, 0.8, 0.8];
         needsupport = [needsupport, true];
         objectclass = [objectclass, 'table'];
+    elseif strncmp(objectnames{i}, 'dining-table', 12)
+        objectsizes = [objectsizes; 0.8, 1.6, 0.8, 0.8];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'dining_table'];
+    elseif strncmp(objectnames{i}, 'long-table', 12)
+        objectsizes = [objectsizes; 0.8, 1.6, 0.8, 0.8];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'table'];
     elseif strncmp(objectnames{i}, 'desk', 4)
         objectsizes = [objectsizes; 0.8, 1.6, 0.8, 0.8];
         needsupport = [needsupport, true];
@@ -83,6 +95,10 @@ for i = 1:length(objectnames)
         objectsizes = [objectsizes; 0.5, 0.5, 0.75, 0.75];
         needsupport = [needsupport, true];
         objectclass = [objectclass, 'night_stand'];
+    elseif strncmp(objectnames{i}, 'side-table', 10)
+        objectsizes = [objectsizes; 0.5, 0.5, 0.75, 0.75];
+        needsupport = [needsupport, true];
+        objectclass = [objectclass, 'side_table'];
     elseif strncmp(objectnames{i}, 'box', 3)
         objectsizes = [objectsizes; 0.5, 0.5, 0.5, 0.5];
         needsupport = [needsupport, true];
@@ -107,7 +123,7 @@ relation.support = needsupport;
 relation.againstwall = [];
 for i = 1:length(objectclass)
     switch relation.class{i}
-        case {'dresser', 'bed', 'night-stand', 'picture', 'whiteboard', 'mirror', 'sink'}
+        case {'dresser', 'bed', 'night_stand', 'side_table', 'picture', 'whiteboard', 'mirror', 'sink', 'door'}
             relation.againstwall(i) = true;
         otherwise
             relation.againstwall(i) = false;

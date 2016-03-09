@@ -7,17 +7,27 @@ dir_index = (1:Nobj)*4;
 index = find(X0(dir_index, 1) ~= X0(dir_index, 2));
 index = dir_index(index);
 Ndir = length(index);
+multidir_index = find(config.relation.multidir) * 4;
+multidir_index = intersect(multidir_index, index);
+Nmultidir = length(multidir_index);
 
 assert(Ndir < 10, 'support at most 10 directions');
 
 dir_val = uint8(dec2bin(0:(2^(Ndir)-1), Ndir)) - uint8('0');
 dir_val = dir_val(randperm(size(dir_val, 1)), :);
 
+Nmultidir = 0;
+dir_multidir = uint8(dec2bin(0:(2^(Nmultidir)-1), Nmultidir)) - uint8('0');
+
 % enumerate orientations
 num_found = 0;
+% multidir_index = [zeros(Nobj, 3); config.relation.multidir];
+% multidir_index = logical(multidir_index(:));
 for i = 1:size(dir_val, 1)
+%     for j = 1:size(dir_multidir, 1)
     X = X0;
     X(index, :) = [dir_val(i, :); dir_val(i, :)]';
+%     X(multidir_index, :) = X(multidir_index, :) + double([dir_multidir(j, :); dir_multidir(j, :)]');
     [ok, X] = direction_check_ok(X, config);
     if ok
         current_layout = random_interval_analysis(X, config, nsamples);
@@ -29,6 +39,7 @@ for i = 1:size(dir_val, 1)
             end
         end
     end
+%     end
 end
 
 if Ndir == 0
@@ -81,6 +92,7 @@ while N > 0 && length(layouts) < nsamples
         layouts = [layouts X];
     elseif vector_eq(R, [0, 0])
         % not feasible
+%         disp(X);
     else
         % possibly feasible
         X1 = X;
@@ -204,6 +216,32 @@ end
 
 [maxdiff, index] = max(X(:, 2) - X(:, 1));
 
+Nrel = size(config.relation.rel, 1);
+
+% re-direction
+for i = 1:Nrel
+    semantic = config.relation.rel(i, :);
+    if strcmp(semantic{3}, 'under') && strncmp(semantic{1}, 'chair', 5)
+        obj1 = get_objectid(semantic{1}, config.relation.nouns);
+        obj2 = get_objectid(semantic{2}, config.relation.nouns);
+            
+        if vector_eq(X(obj1*4, :), [0, 0])
+            [p1, q1] = get_coords(config, semantic{1}, obj1, X(obj1*4, :), X((obj1-1)*4+(1:3),:));
+            [p2, q2] = get_coords(config, semantic{2}, obj2, X(obj2*4, :), X((obj2-1)*4+(1:3),:));
+            if vector_eq(ia.lt(p2(2, :), p1(2, :)), [1, 1])
+                X(obj1*4, :) = [2, 2];
+            end
+        elseif vector_eq(X(obj1*4, :), [1, 1])
+            [p1, q1] = get_coords(config, semantic{1}, obj1, X(obj1*4, :), X((obj1-1)*4+(1:3),:));
+            [p2, q2] = get_coords(config, semantic{2}, obj2, X(obj2*4, :), X((obj2-1)*4+(1:3),:));
+            if vector_eq(ia.lt(p2(1, :), p1(1, :)), [1, 1])
+                X(obj1*4, :) = [3, 3];
+            end
+        end
+    end
+end
+
+
 R = [];
 % check bounds
 Nobj = length(config.relation.nouns);
@@ -244,6 +282,7 @@ for i = 1:Nobj
                     Rintersect = ia.and(Rintersect, ia.lt(max(coordii{1}(k,:),coordjj{1}(k,:)),min(coordii{2}(k,:),coordjj{2}(k,:))));
                 end
                 if vector_eq(Rintersect, [1, 1])
+                    % intersect
                     R = [0, 0];
                     return;
                 else
@@ -258,7 +297,6 @@ dnear = config.spatial.near;
 datt = config.spatial.attach;
             
 % check relation
-Nrel = size(config.relation.rel, 1);
 for i = 1:Nrel
     if ~isempty(R) && vector_eq(R, [0, 0])
         return
@@ -306,16 +344,16 @@ for i = 1:Nrel
         case 'left'
             d1 = X(obj1*4,:);
             d2 = X(obj2*4,:);
-            if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
-                R = ia.and(R, ia.equal(d1, d2));
-            end
+%             if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
+%                 R = ia.and(R, ia.equal(d1, d2));
+%             end
             R = ia.and(R, ia.left(p1, q1, d1, p2, q2, d2, dnear));
         case 'right'
             d1 = X(obj1*4,:);
             d2 = X(obj2*4,:);
-            if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
-                R = ia.and(R, ia.equal(d1, d2));
-            end
+%             if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
+%                 R = ia.and(R, ia.equal(d1, d2));
+%             end
             if ~config.relation.support(obj1) && ~config.relation.support(obj2)
                 if X(obj1*4,2) == 0
                     R = ia.and(R, ia.right(p1([1 3]), q1([1 3]), d1, p2([1 3]), q2([1 3]), d2, dnear));

@@ -42,6 +42,14 @@ table.leg3 = {'table:leg3', @(lx,ly,lz,hz)[lx-w,ly-w,o4,o4+w,o4+w,lz]'};
 table.top = {'table:top', @(lx,ly,lz,hz)[o4,o4,lz-w,lx,ly,o4+w]'};
 models = add_models(models, 'table', table);
 
+diningtable = [];
+diningtable.leg0 = {'dining_table:leg0', @(lx,ly,lz,hz)[o4,o4,o4,o4+w,o4+w,lz]'};
+diningtable.leg1 = {'dining_table:leg1', @(lx,ly,lz,hz)[o4,ly-w,o4,o4+w,o4+w,lz]'};
+diningtable.leg2 = {'dining_table:leg2', @(lx,ly,lz,hz)[lx-w,o4,o4,o4+w,o4+w,lz]'};
+diningtable.leg3 = {'dining_table:leg3', @(lx,ly,lz,hz)[lx-w,ly-w,o4,o4+w,o4+w,lz]'};
+diningtable.top = {'dining_table:top', @(lx,ly,lz,hz)[o4,o4,lz-w,lx,ly,o4+w]'};
+models = add_models(models, 'dining_table', diningtable);
+
 desk = [];
 desk.leg0 = {'desk:leg0', @(lx,ly,lz,hz)[o4,o4,o4,o4+w,o4+w,lz]'};
 desk.leg1 = {'desk:leg1', @(lx,ly,lz,hz)[o4,ly-w,o4,o4+w,o4+w,lz]'};

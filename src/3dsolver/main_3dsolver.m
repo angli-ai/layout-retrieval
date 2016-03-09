@@ -1,7 +1,7 @@
 % 3dsolver main
 
-inputdir = 'testdata-3';
-outputroot = 'output-3';
+inputdir = 'relations-3dgp';
+outputroot = 'output-3dgp';
 if ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -11,7 +11,7 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '00392';
+imagename = '292';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
@@ -22,6 +22,9 @@ relation = relation_preprocess(relation);
 
 % object models
 objmodels = get_object_models();
+
+global starttime
+starttime = tic;
 
 % set room config
 room = [];
@@ -42,7 +45,7 @@ config.objmodels = objmodels;
 config.room = room;
 config.spatial = spatial;
 num_layout_sample = 5;
-num_layout_sample_each = 5;
+num_layout_sample_each = 1;
 % compute layouts
 layouts = interval_branch_bound(config, num_layout_sample_each);
 % sample layouts

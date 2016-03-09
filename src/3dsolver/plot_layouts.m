@@ -21,7 +21,7 @@ for i = 1:Nlayouts
         c = get_color(config.relation.class{j});
         pts = [];
         switch config.relation.class{j}
-            case {'bed', 'chair', 'sofa', 'desk', 'table', 'piano_bench'}
+            case {'bed', 'chair', 'sofa', 'desk', 'table', 'dining_table', 'piano_bench'}
                 pts2d = [];
                 for k = 1:length(config.objmodels.subobjs)
                     if strncmp(config.objmodels.subobjs{k}, config.relation.class{j}, length(config.relation.class{j}))
@@ -132,10 +132,26 @@ else
         xx = cubmat * s';
         xx(4:5) = [xx(5) xx(4)];
         xx(1:2) = [xx(2) xx(1)];
+    p = X + xx(1:3);
+    q = X + xx(1:3) + xx(4:6);
     elseif direction == 1
         s = config.relation.sizes(objid, :);
         xx = cubmat * s';
-    end
     p = X + xx(1:3);
     q = X + xx(1:3) + xx(4:6);
+    elseif direction == 3
+        s = config.relation.sizes(objid, :);
+        xx = cubmat * s';
+        xx(1:2) = -xx(1:2) + s(1:2)';
+        xx(4:5) = -xx(4:5);
+        q = X + xx(1:3) + [0;0;xx(6)];
+        p = X + xx(1:3) + [xx(4:5);0];
+    elseif vector_eq(direction, [2 2])
+        s = config.relation.sizes(objid, :);
+        xx = cubmat * s';
+        xx(1:2) = -xx([2 1]) + s([2 1])';
+        xx(4:5) = -xx([5 4]);
+        q = X + xx(1:3) + [0;0;xx(6)];
+        p = X + xx(1:3) + [xx(4:5);0];
+    end
 end

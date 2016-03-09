@@ -2,8 +2,8 @@
 
 % 3dsolver main
 
-inputdir = 'testdata';
-outputroot = 'output-ramawks-2';
+inputdir = 'relation-3dgp';
+outputroot = 'output-3dgp';
 
 for id = 16:21
 imagename = dir(fullfile(outputroot, num2str(id, '%d-*')));

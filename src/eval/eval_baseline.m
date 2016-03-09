@@ -2,7 +2,7 @@
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-resultdir = 'sunrgbd-output-3-new';
+resultdir = 'sunrgbd-output-3-gt';
 
 resultlist = dir(fullfile(resultdir, '*.mat'));
 resultlist = {resultlist(:).name};
@@ -49,10 +49,12 @@ for id = 1:length(resultlist)
     index = strfind(inputmat, '-');
     queryid = imagename;
     if isempty(index)
+        continue;
         index = strfind(inputmat, '.mat');
         imageid = str2num(inputmat(1:index(end)-1));
         imagename = (inputmat(1:index(end)-1));
     else
+%         continue;
 %     imageid = inputmat(index(1)+1:index(2)-5);
 %     imageid = str2num(imageid);
         jj = index(1);

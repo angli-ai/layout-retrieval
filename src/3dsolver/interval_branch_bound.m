@@ -58,6 +58,7 @@ layouts = {};
 % single object attached to two walls
 for i = 1:Nobj
     if ~touch_ground(i), continue; end
+    if config.relation.multidir(i), continue; end
     X0 = X;
 %     if config.relation.sizes(i, 1) ~= config.relation.sizes(i, 2)
     if config.relation.againstwall(i)
