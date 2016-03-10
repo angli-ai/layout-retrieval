@@ -1,6 +1,7 @@
 % generate baseline input data
-inputdir = '/Users/ang/projects/layout3d/layout-retrieval/src/3dsolver/testdata-3';
-outputdir = 'baseline-inputs';
+dataset = '3dgp';
+inputdir = ['../data/relations-' dataset];
+outputdir = fullfile('baseline-data', dataset);
 
 if ~exist(outputdir, 'dir')
     mkdir(outputdir);

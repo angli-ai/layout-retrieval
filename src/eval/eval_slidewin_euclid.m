@@ -6,10 +6,12 @@ if nargin < 1
     num_jobs = 1;
 end
 
-use_gt = true;
+use_gt = false;
+use_thresh = true;
+thresh = 0.5;
 
 input_layout2d = '../data/output-sunrgbd-1-5/';
-outputdir = '../eval-data/output-sunrgbd-1-5-gt';
+outputdir = '../eval-data/output-sunrgbd-1-5-det0.5';
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
@@ -87,6 +89,10 @@ for id = 1:length(dirlist)
         else
             det = detection.detection{k};
             index = det.bg_conf < det.conf;
+            if use_thresh
+                index = index & det.conf > thresh;
+                det.conf(:) = 1.0;
+            end
             det = det(index, :);
         end
         S = [];
