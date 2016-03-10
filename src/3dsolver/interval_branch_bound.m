@@ -52,6 +52,7 @@ while true
     end
     if ~changed, break; end
 end
+global starttime
 
 layouts = {};
 % determine the upper wall and left wall first
@@ -59,6 +60,10 @@ layouts = {};
 for i = 1:Nobj
     if ~touch_ground(i), continue; end
     if config.relation.multidir(i), continue; end
+    tcost = toc(starttime);
+    if tcost > 13000
+        break;
+    end
     X0 = X;
 %     if config.relation.sizes(i, 1) ~= config.relation.sizes(i, 2)
     if config.relation.againstwall(i)
@@ -77,7 +82,6 @@ for i = 1:Nobj
     end
 end
 
-global starttime
 % two objects attached to the walls
 for i = 1:Nobj
     if ~touch_ground(i), continue; end
@@ -95,7 +99,7 @@ for i = 1:Nobj
         if i == j, continue, end
         if ~touch_ground(j), continue; end
         tcost = toc(starttime);
-        if tcost > 25000
+        if tcost > 13000
             break;
         end
         % if obj_j with x = 0

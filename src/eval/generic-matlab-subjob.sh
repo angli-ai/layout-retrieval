@@ -29,7 +29,7 @@ logfile=$WORKDIR/pbs/$jobname/$jobname.o$node_id
 echo $host > $logfile
 
 cd $matlabsrc
-matlab=/opt/common/matlab-r2015a/bin/matlab
+matlab=/opt/common/matlab-r2014b/bin/matlab
 
 prefix=""
 matlab_func="$jobname($(($node_id+1)), $num_workers)"

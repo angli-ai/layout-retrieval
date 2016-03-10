@@ -8,8 +8,8 @@ end
 
 use_gt = true;
 
-input_layout2d = '../3dsolver/output-3/';
-outputdir = 'sunrgbd-output-3-gt';
+input_layout2d = '../data/output-sunrgbd-1-5/';
+outputdir = '../eval-data/output-sunrgbd-1-5-gt';
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
