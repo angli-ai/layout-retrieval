@@ -1,6 +1,10 @@
 function output = sample_layouts(config, layouts, num)
 % method: random
-assert(~isempty(layouts));
+if isempty(layouts)
+    output = {};
+    return;
+end
+
 while length(layouts) < num
     layouts = [layouts, layouts];
 end

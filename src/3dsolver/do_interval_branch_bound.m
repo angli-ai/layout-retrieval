@@ -79,7 +79,14 @@ unit = 0.2;
 
 maxN = 1000;
 
+global starttime
+
 while N > 0 && length(layouts) < nsamples
+
+    tcost = toc(starttime)
+    if tcost > 3600
+        break;
+    end
     X = q(:, :, N);
     N = N - 1;
     X = shrink(X, boundmap, unit);
@@ -89,9 +96,9 @@ while N > 0 && length(layouts) < nsamples
         continue;
     end
     fprintf(1, 'q.size = %d, maxdiff = %.2f, #layouts = %d\n', N, maxdiff, length(layouts));
-    if maxdiff < 0.4
-        disp(X);
-    end
+    %if maxdiff < 0.4
+        % disp(X);
+    %end
 %     fprintf(1, 'q.size = %d, maxdiff = %.2f\n', N, maxdiff);
     if vector_eq(R, [1, 1])
         % feasible

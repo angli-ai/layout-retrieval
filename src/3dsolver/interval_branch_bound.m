@@ -54,6 +54,10 @@ while true
 end
 global starttime
 
+exitcondition = [];
+exitcondition.num_layouts = 10;
+exitcondition.time = 3600;
+
 layouts = {};
 % determine the upper wall and left wall first
 % single object attached to two walls
@@ -61,7 +65,7 @@ for i = 1:Nobj
     if ~touch_ground(i), continue; end
     if config.relation.multidir(i), continue; end
     tcost = toc(starttime);
-    if tcost > 13000
+    if  tcost > exitcondition.time
         break;
     end
     X0 = X;
@@ -99,7 +103,7 @@ for i = 1:Nobj
         if i == j, continue, end
         if ~touch_ground(j), continue; end
         tcost = toc(starttime);
-        if tcost > 13000
+        if tcost > exitcondition.time
             break;
         end
         % if obj_j with x = 0

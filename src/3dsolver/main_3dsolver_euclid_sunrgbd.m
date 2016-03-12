@@ -5,8 +5,8 @@ if nargin < 1
     worker_id = 1;
     num_workers = 1;
 end
-inputdir = 'relations-3dgp';
-outputroot = '../data/output-3dgp-1-5';
+inputdir = 'relations-sunrgbd';
+outputroot = 'output-sunrgbd-5';
 if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -24,7 +24,6 @@ for i = 1:length(filelist)
         continue;
     end
     relation_mat = filelist{i};
-    disp(relation_mat);
     index = strfind(relation_mat, '.jpg-relation');
     imagename = relation_mat(1:index(1)-1);
 % relation_mat = [imagename '.jpg-relation.mat'];
@@ -63,11 +62,11 @@ config.spatial = spatial;
 global starttime
 starttime = tic;
 num_layout_sample = 5;
-num_layout_sample_each = 1;
+num_layout_sample_each = 5;
 % compute layouts
 layouts = interval_branch_bound(config, num_layout_sample_each);
 % sample layouts
-layout_samples = sample_layouts(config, layouts, num_layout_sample);
+layout_samples = sample_layouts(layouts, num_layout_sample);
 if ~exist(outputdir, 'dir')
     mkdir(outputdir);
 end
