@@ -83,7 +83,7 @@ global starttime
 
 while N > 0 && length(layouts) < nsamples
 
-    tcost = toc(starttime)
+    tcost = toc(starttime);
     if tcost > 3600
         break;
     end

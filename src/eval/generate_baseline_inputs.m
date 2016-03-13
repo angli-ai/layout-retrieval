@@ -1,6 +1,6 @@
 % generate baseline input data
 dataset = '3dgp';
-inputdir = ['../data/relations-' dataset];
+inputdir = ['../data/relations-' dataset '-all'];
 outputdir = fullfile('baseline-data', dataset);
 
 if ~exist(outputdir, 'dir')

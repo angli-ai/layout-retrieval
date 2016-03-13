@@ -7,7 +7,7 @@ for i = 1:length(input.classes)
         score = score + input.numbers(i);
     else
         assert(length(index) == 1);
-        score = score + max(0, input.numbers(i) - gt.numbers(index));
-%         score = score + abs(input.numbers(i) - gt.numbers(index));
+%         score = score + max(0, input.numbers(i) - gt.numbers(index));
+        score = score + abs(input.numbers(i) - gt.numbers(index));
     end
 end

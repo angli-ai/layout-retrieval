@@ -1,6 +1,6 @@
 % 3dsolver main
 
-inputdir = 'relations-sunrgbd';
+inputdir = '../data/relations-sunrgbd-all';
 outputroot = 'output-sun-mac';
 if ~exist(outputroot, 'dir')
     mkdir(outputroot);
@@ -11,7 +11,7 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '00803';
+imagename = '8-00132';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
@@ -48,8 +48,11 @@ num_layout_sample = 5;
 num_layout_sample_each = 1;
 % compute layouts
 layouts = interval_branch_bound(config, num_layout_sample_each);
+if isempty(layouts)
+    return;
+end
 % sample layouts
-layout_samples = sample_layouts(layouts, num_layout_sample);
+layout_samples = sample_layouts(config, layouts, num_layout_sample);
 if ~exist(outputdir, 'dir')
     mkdir(outputdir);
 end

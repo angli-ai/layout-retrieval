@@ -1,4 +1,4 @@
-function [score, s, x, y] = exhaustive_match(layout, image, config)
+function [score, s, x, y, iou_cache, conf_cache] = exhaustive_match(layout, image, config)
 Xmin = min([image.X1; image.X2]);
 Ymin = min([image.Y1; image.Y2]);
 Xmax = max([image.X1; image.X2]);
@@ -27,6 +27,8 @@ Ngrids = length(s);
 Nobj = size(layout, 1);
 score = zeros(1, Ngrids);
 prev_classname = '';
+iou_cache = inf(Nobj, Ngrids);
+conf_cache = inf(Nobj, Ngrids);
 for i = 1:Nobj
     classname = layout.classname{i};
     classname = fixclassname(classname);
@@ -64,8 +66,13 @@ for i = 1:Nobj
         if isempty(maxp)
             maxp = p;
             pick(:) = jj;
+            iou_cache(i, :) = iou;
+            conf_cache(i, :) = conf;
         else
-            pick(p > maxp) = jj;
+            kk = p > maxp;
+            pick(kk) = jj;
+            iou_cache(i, kk) = iou(kk);
+            conf_cache(i, kk) = conf;
             maxp = max(p, maxp);
         end
     end
