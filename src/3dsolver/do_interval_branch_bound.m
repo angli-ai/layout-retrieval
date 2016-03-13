@@ -354,6 +354,9 @@ for i = 1:Nrel
             if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
                 R = ia.and(R, ia.equal(X(obj1*4,:), X(obj2*4,:)));
             end
+            R = ia.and(R, ia.or(...
+                ia.left(p1, q1, d1, p2, q2, d2, datt), ...
+                ia.right(p1, q1, d1, p2, q2, d2, datt)));
         case 'left'
             d1 = X(obj1*4,:);
             d2 = X(obj2*4,:);

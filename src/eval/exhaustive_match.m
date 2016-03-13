@@ -7,7 +7,7 @@ Xmax_l = 1;
 Ymax_l = max([layout.Y1; layout.Y2]);
 s = []; x = []; y = [];
 if isempty(Xmax)
-    score = 0;
+    score = -inf;
     return;
 end
 step = 10;

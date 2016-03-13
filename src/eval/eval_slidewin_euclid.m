@@ -6,14 +6,14 @@ if nargin < 1
     num_jobs = 1;
 end
 
-use_gt = false;
-use_thresh = true;
+dataset = 'sunrgbd';
+use_gt = true;
+use_thresh = false;
 thresh = 0.5;
 
-input_layout2d = '../data/output-sunrgbd-1-5/';
-outputdir = '../eval-data/output-sunrgbd-1-5-det0.5';
+input_layout2d = '../data/output-3dgp-1-5/';
+outputdir = '../eval-data/output-3dgp-1-5-gt';
 
-dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
 if ~exist('SUNRGBDMeta', 'var')
     load('detection-box/SUNRGBDMeta.mat');

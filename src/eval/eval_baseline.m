@@ -2,7 +2,7 @@
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-resultdir = 'sunrgbd-output-3-gt';
+resultdir = ['../eval-data/output-' dataset '-1-5-gt'];
 
 resultlist = dir(fullfile(resultdir, '*.mat'));
 resultlist = {resultlist(:).name};
@@ -118,16 +118,16 @@ for id = 1:length(resultlist)
     score = score_det_soft(imageid);
     det_ranks_soft = [det_ranks_soft round((sum(score_det_soft < score - eps) + 1+ sum(score_det_soft < score + eps)) / 2)];
     
-    if ~isempty(score_res)
+    if ~isempty(score_res_mean)
         score = score_res_mean(imageid);
-        rank = round((sum(score_res < score - eps) + 1 + sum(score_res < score + eps)) / 2);
+        rank = round((sum(score_res_mean < score - eps) + 1 + sum(score_res_mean < score + eps)) / 2);
 %         [~, rank] = sort(score_res(A));
 %         [~, rank] = sort(rank);
 %         res_ranks = [res_ranks rank(B(imageid))];
         res_ranks_mean = [res_ranks_mean rank];
         
         score = score_res_max(imageid);
-        rank = round((sum(score_res < score - eps) + 1 + sum(score_res < score + eps)) / 2);
+        rank = round((sum(score_res_max < score - eps) + 1 + sum(score_res_max < score + eps)) / 2);
         res_ranks_max = [res_ranks_max rank];
     end
 end
