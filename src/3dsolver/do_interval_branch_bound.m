@@ -406,12 +406,12 @@ for i = 1:Nrel
             R = ia.and(R, ia.lt(tmp, q2(2,:)));
             
         case 'under'
-            tmp = (p1(1,:)+q1(1,:))/2;
-            R = ia.and(R, ia.lt(p2(1,:), tmp));
-            R = ia.and(R, ia.lt(tmp, q2(1,:)));
-            tmp = (p1(2,:)+q1(2,:))/2;
-            R = ia.and(R, ia.lt(p2(2,:), tmp));
-            R = ia.and(R, ia.lt(tmp, q2(2,:)));
+%             tmp = (p1(1,:)+q1(1,:))/2;
+            R = ia.and(R, ia.lt(p2(1,:), q1(1,:)));
+            R = ia.and(R, ia.lt(p1(1,:), q2(1,:)));
+%             tmp = (p1(2,:)+q1(2,:))/2;
+            R = ia.and(R, ia.lt(p2(2,:), q1(2,:)));
+            R = ia.and(R, ia.lt(p1(2,:), q2(2,:)));
         otherwise
 %                 error(['rel' rel ' not found']);
     end

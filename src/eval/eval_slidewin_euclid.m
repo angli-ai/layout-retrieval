@@ -11,8 +11,8 @@ use_gt = true;
 use_thresh = false;
 thresh = 0.5;
 
-input_layout2d = '../data/output-3dgp-1-5/';
-outputdir = '../eval-data/output-3dgp-1-5-gt';
+input_layout2d = '../data/output-sunrgbd-1-5/';
+outputdir = '../eval-data/output-sunrgbd-1-5-gt';
 
 inputdir = fullfile('baseline-data', dataset);
 if ~exist('SUNRGBDMeta', 'var')
