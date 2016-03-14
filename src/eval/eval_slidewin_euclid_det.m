@@ -1,5 +1,5 @@
 % eval exhaustive search
-function eval_slidewin_euclid(job_id, num_jobs)
+function eval_slidewin_euclid_det(job_id, num_jobs)
 
 if nargin < 1
     job_id = 1;
@@ -8,8 +8,8 @@ end
 
 use_gt = false;
 
-input_layout2d = '../data/output-sunrgbd-1-5/';
-outputdir = '../eval-data/output-sunrgbd-1-5-det';
+input_layout2d = '../data/output-sunrgbdv5-20/';
+outputdir = '../eval-data/output-sunrgbdv5-20-det';
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);

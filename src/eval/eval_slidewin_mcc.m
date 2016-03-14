@@ -1,18 +1,23 @@
 % eval exhaustive search
-function eval_slidewin_euclid(job_id, num_jobs)
+function eval_slidewin_mcc(job_id, num_jobs)
 
 if nargin < 1
     job_id = 1;
     num_jobs = 1;
+else
+    job_id = str2num(job_id);
+    num_jobs = str2num(num_jobs);
 end
+
+fprintf(1, '%d/%d\n', job_id, num_jobs);
 
 dataset = 'sunrgbd';
 use_gt = false;
 use_thresh = false;
 thresh = 0.5;
 
-input_layout2d = '../data/output-sunrgbdv5-20/';
-outputdir = '../eval-data/output-sunrgbdv5-20-det';
+input_layout2d = '../data/output-sunrgbd-20/';
+outputdir = '../eval-data/output-sunrgbd-20-det';
 
 inputdir = fullfile('baseline-data', dataset);
 if ~exist('SUNRGBDMeta', 'var')
@@ -22,7 +27,7 @@ end
 % load ground truth
 detection_dir = fullfile('detection-box', dataset);
 if ~exist('gt', 'var')
-gt = load(fullfile(detection_dir, 'gtbbox_test.mat'));
+% gt = load(fullfile(detection_dir, 'gtbbox_test.mat'));
 end
 if ~exist('detection', 'var')
 detection = load(fullfile(detection_dir, 'detection_test.mat'));

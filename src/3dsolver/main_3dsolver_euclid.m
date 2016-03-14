@@ -5,8 +5,8 @@ if nargin < 1
     worker_id = 1;
     num_workers = 1;
 end
-inputdir = '../data/relations-3dgpv2';
-outputroot = '../data/output-3dgpv2-5-5';
+inputdir = '../data/relations-sunrgbdv5';
+outputroot = '../data/output-sunrgbdv5-5-5';
 if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end

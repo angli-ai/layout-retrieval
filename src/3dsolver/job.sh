@@ -24,7 +24,7 @@
 ### Set the number of cores (cpus) and memory that will be used for this job
 ### When specifying memory request slightly less than 2GB memory per ncpus for standard node
 ### Some memory needs to be reserved for the Linux system processes
-#PBS -l nodes=6:ppn=2
+#PBS -l nodes=4:ppn=3
 
 ### Specify "wallclock time" required for this job, hhh:mm:ss
 #PBS -l walltime=04:00:00
