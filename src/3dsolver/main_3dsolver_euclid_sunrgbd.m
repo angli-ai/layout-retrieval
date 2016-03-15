@@ -5,8 +5,8 @@ if nargin < 1
     worker_id = 1;
     num_workers = 1;
 end
-inputdir = 'relations-sunrgbd';
-outputroot = 'output-sunrgbd-5';
+inputdir = 'relations-sunrgbdv2';
+outputroot = 'output-sunrgbdv2-1';
 if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -66,7 +66,7 @@ num_layout_sample_each = 5;
 % compute layouts
 layouts = interval_branch_bound(config, num_layout_sample_each);
 % sample layouts
-layout_samples = sample_layouts(layouts, num_layout_sample);
+layout_samples = sample_layouts(config, layouts, num_layout_sample);
 if ~exist(outputdir, 'dir')
     mkdir(outputdir);
 end
