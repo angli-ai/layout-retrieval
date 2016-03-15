@@ -3,6 +3,8 @@ if nargin < 3
     outputdir = [];
 end
 
+use_eps = false;
+
 if ~isempty(outputdir) && ~exist(outputdir, 'dir')
     mkdir(outputdir);
 end
@@ -17,6 +19,11 @@ for i = 1:Nlayouts
     figure(1);
     scatter3(layout.cam(1), layout.cam(2), layout.cam(3), 'x'); hold on;
     bbox2d = [];
+    fillqueue = [];
+    fillqueue.x = [];
+    fillqueue.y = [];
+    fillqueue.z = [];
+    fillqueue.c = [];
     for j = 1:Nobj
         c = get_color(config.relation.class{j});
         pts = [];
@@ -33,9 +40,19 @@ for i = 1:Nlayouts
                         [kpts2d, zbuf] = camera_projection(pts, layout.cam, pi/2 + layout.cam_ax/180*pi, layout.focal);
                         x = reshape(kpts2d(1, :), 4, 6);
                         y = reshape(kpts2d(2, :), 4, 6);
-                        figure(2);
-                        fill(x, y, c);
-                        hold on;
+                        z = reshape(zbuf, 4, 6);
+                        z = mean(z);
+                        
+                        fillqueue.x = [fillqueue.x x];
+                        fillqueue.y = [fillqueue.y y];
+                        fillqueue.z = [fillqueue.z z];
+                        fillqueue.c = [fillqueue.c c * ones(1, 6)];
+%                         fillqueue = [fillqueue {{x, y, c, mean(zbuf)}}];
+%                         figure(2);
+%                         hf = fill(x, y, c);
+%                         set(hf,'facealpha',.5);
+%                         set(hf,'edgealpha',.5);
+%                         hold on;
                         pts2d = cat(2, pts2d, kpts2d);
                     end
                 end
@@ -46,17 +63,28 @@ for i = 1:Nlayouts
                 hold on;
                 pts = [x(:) y(:) z(:)];
                 [pts2d, zbuf] = camera_projection(pts, layout.cam, pi/2 + layout.cam_ax/180*pi, layout.focal);
-                figure(2);
+                z = reshape(zbuf, 4, 6);
+                z = mean(z);
                 x = reshape(pts2d(1, :), 4, 6);
                 y = reshape(pts2d(2, :), 4, 6);
-                fill(x, y, c);
-                hold on;
+                fillqueue.x = [fillqueue.x x];
+                fillqueue.y = [fillqueue.y y];
+                fillqueue.z = [fillqueue.z z];
+                fillqueue.c = [fillqueue.c c * ones(1, 6)];
+%                 fillqueue = [fillqueue {{x, y, c, mean(zbuf)}}];
+%                 figure(2);
+%                 x = reshape(pts2d(1, :), 4, 6);
+%                 y = reshape(pts2d(2, :), 4, 6);
+%                 hf = fill(x, y, c);
+%                 set(hf,'facealpha',.5);
+%                 set(hf,'edgealpha',.5);
+%                 hold on;
         end
         bbox = [min(pts2d, [], 2); max(pts2d, [], 2)];
-        figure(3);
-        fill([bbox(1), bbox(3), bbox(3), bbox(1)], ...
-            [bbox(2), bbox(2), bbox(4), bbox(4)], c);
-        hold on;
+%         figure(3);
+%         fill([bbox(1), bbox(3), bbox(3), bbox(1)], ...
+%             [bbox(2), bbox(2), bbox(4), bbox(4)], c);
+%         hold on;
         bbox2d = [bbox2d; bbox'];
         % project to 2d: pts
 %         [pts2d, zbuf] = camera_projection(pts, layout.cam, pi/2 + layout.cam_ax/180*pi, layout.focal);
@@ -68,12 +96,27 @@ for i = 1:Nlayouts
         saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-3d.jpg')));
     end
     h = figure(2);
+    
+    [~, index] = sort(fillqueue.z, 'descend');
+    for j = 1:length(fillqueue.z)
+        x = fillqueue.x(:, index(j));
+        y = fillqueue.y(:, index(j));
+        c = fillqueue.c(index(j));
+        hf = fill(x, y, c);
+        set(hf,'facealpha',.5);
+        set(hf,'edgealpha',.5);
+        hold on;
+    end
     axis equal;
     hold off;
     if ~isempty(outputdir)
+        if use_eps
+            saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.eps')), 'ps2c');
+        else
         saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.jpg')));
+        end
     end
-    h = figure(3);
+    h = figure(2);
     axis equal;
     hold off;
     for j = 1:Nobj
@@ -99,7 +142,7 @@ function [img_pt, zbuffer] = camera_projection(pts, cam, theta, focal)
 rp = bsxfun(@minus, pts, cam);
 rp = rotation_z(theta) * rp';
 img_pt = focal * (rp([1 3], :) ./ rp([2 2],:));
-zbuffer = rp(1, :);
+zbuffer = rp(2, :);
 
 function P = rotation_z(theta)
 P = [cos(theta), sin(theta), 0; ...

@@ -1,5 +1,5 @@
 % generate baseline input data
-dataset = '3dgp';
+dataset = 'sunrgbd';
 inputdir = ['../data/relations-' dataset '-all'];
 outputdir = fullfile('baseline-data', dataset);
 

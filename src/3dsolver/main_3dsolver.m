@@ -11,7 +11,7 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '8-00132';
+imagename = '1-00024';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
@@ -45,9 +45,11 @@ config.objmodels = objmodels;
 config.room = room;
 config.spatial = spatial;
 num_layout_sample = 5;
-num_layout_sample_each = 1;
+num_layout_sample_each = 5;
 % compute layouts
+timer = tic;
 layouts = interval_branch_bound(config, num_layout_sample_each);
+toc(timer);
 if isempty(layouts)
     return;
 end

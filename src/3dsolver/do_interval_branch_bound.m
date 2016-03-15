@@ -67,9 +67,13 @@ end
 
 function layouts = random_interval_analysis(X0, config, nsamples)
 
+enable_shrink = false;
+
 layouts = {};
 
+if enable_shrink
 boundmap = build_boundmap(config, X0);
+end
 
 q = zeros(size(X0, 1), size(X0, 2), 0);
 q = cat(3, q, X0);
@@ -89,7 +93,9 @@ while N > 0 && length(layouts) < nsamples
     end
     X = q(:, :, N);
     N = N - 1;
+    if enable_shrink
     X = shrink(X, boundmap, unit);
+    end
     [X, R] = shrink_and_feasible(config, X, unit);
     [maxdiff, index] = max(X(:, 2) - X(:, 1));
     if ~isempty(find(X(:, 2) < X(:, 1), 1))
