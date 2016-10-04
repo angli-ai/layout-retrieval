@@ -43,7 +43,15 @@ for i = 1:length(relation.rel)
             if length(secondnames) == 1
                 secondnames = secondnames{1};
             end
-            new_relation.rel = [new_relation.rel; {firstnames{j}, secondnames, elem{3}}];
+            if strcmp(elem{3}, 'in_front_of') || strcmp(elem{3}, 'front') ...
+                    || strcmp(elem{3}, 'behind') ...
+                    || strcmp(elem{3}, 'left') || strcmp(elem{3}, 'right')
+                for k = 1:length(secondnames)
+                    new_relation.rel = [new_relation.rel; {firstnames{j}, secondnames{k}, elem{3}}];
+                end
+            else
+                new_relation.rel = [new_relation.rel; {firstnames{j}, secondnames, elem{3}}];
+            end
             new_relation.nouns = [new_relation.nouns secondnames];
         end
     end

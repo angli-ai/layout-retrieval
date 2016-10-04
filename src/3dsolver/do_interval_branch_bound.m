@@ -67,7 +67,7 @@ end
 
 function layouts = random_interval_analysis(X0, config, nsamples)
 
-enable_shrink = false;
+enable_shrink = true;
 
 layouts = {};
 
