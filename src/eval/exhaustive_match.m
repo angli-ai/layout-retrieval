@@ -5,7 +5,7 @@ Xmax = max([image.X1; image.X2]);
 Ymax = max([image.Y1; image.Y2]);
 Xmax_l = 1;
 Ymax_l = max([layout.Y1; layout.Y2]);
-s = []; x = []; y = [];
+s = []; x = []; y = []; iou_cache = []; conf_cache = [];
 if isempty(Xmax)
     score = -inf;
     return;
