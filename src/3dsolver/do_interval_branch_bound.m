@@ -94,7 +94,7 @@ while N > 0 && length(layouts) < nsamples
     X = q(:, :, N);
     N = N - 1;
     if enable_shrink
-    X = shrink(X, boundmap, unit);
+        X = shrink(X, boundmap, unit);
     end
     [X, R] = shrink_and_feasible(config, X, unit);
     [maxdiff, index] = max(X(:, 2) - X(:, 1));

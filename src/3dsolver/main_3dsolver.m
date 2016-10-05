@@ -1,7 +1,7 @@
 % 3dsolver main
 
 inputdir = '../data/relations-sunrgbd-all';
-outputroot = 'output-sun-mac';
+outputroot = 'output-sun-mac-new';
 if ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
