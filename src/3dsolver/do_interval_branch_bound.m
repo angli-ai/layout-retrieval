@@ -16,7 +16,7 @@ assert(Ndir < 10, 'support at most 10 directions');
 dir_val = uint8(dec2bin(0:(2^(Ndir)-1), Ndir)) - uint8('0');
 dir_val = dir_val(randperm(size(dir_val, 1)), :);
 
-Nmultidir = 0;
+% Nmultidir = 0;
 dir_multidir = uint8(dec2bin(0:(2^(Nmultidir)-1), Nmultidir)) - uint8('0');
 
 % enumerate orientations
@@ -24,10 +24,10 @@ num_found = 0;
 % multidir_index = [zeros(Nobj, 3); config.relation.multidir];
 % multidir_index = logical(multidir_index(:));
 for i = 1:size(dir_val, 1)
-%     for j = 1:size(dir_multidir, 1)
+    for j = 1:size(dir_multidir, 1)
     X = X0;
     X(index, :) = [dir_val(i, :); dir_val(i, :)]';
-%     X(multidir_index, :) = X(multidir_index, :) + double([dir_multidir(j, :); dir_multidir(j, :)]');
+    X(multidir_index, :) = X(multidir_index, :) + double([dir_multidir(j, :); dir_multidir(j, :)]');
     [ok, X] = direction_check_ok(X, config);
     if ok
         current_layout = random_interval_analysis(X, config, nsamples);
@@ -39,7 +39,10 @@ for i = 1:size(dir_val, 1)
             end
         end
     end
-%     end
+    end
+    if num_found == nsamples
+        break
+    end
 end
 
 if Ndir == 0
@@ -354,6 +357,8 @@ for i = 1:Nrel
                 R = ia.and(R, ia.le(max(p1(k,:)-datt,p2(k,:)),min(q1(k,:)+datt,q2(k,:))));
             end
         case 'next-to'
+            d1 = X(obj1*4,:);
+            d2 = X(obj2*4,:);
             for k = 1:3
                 R = ia.and(R, ia.le(max(p1(k,:)-datt,p2(k,:)),min(q1(k,:)+datt,q2(k,:))));
             end

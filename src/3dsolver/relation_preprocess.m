@@ -9,6 +9,8 @@ new_relation.rel = {};
 new_relation.occ = {};
 new_relation.wallobj = {};
 
+multidirnames = {};
+
 for i = 1:length(relation.rel)
     elem = relation.rel{i};
     firstnames = get_objectnames(elem{1}, objectnames, objectcounts);
@@ -43,11 +45,14 @@ for i = 1:length(relation.rel)
             if length(secondnames) == 1
                 secondnames = secondnames{1};
             end
-            if strcmp(elem{3}, 'in_front_of') || strcmp(elem{3}, 'front') ...
+            if iscell(secondnames) && (strcmp(elem{3}, 'in_front_of') || strcmp(elem{3}, 'front') ...
                     || strcmp(elem{3}, 'behind') ...
-                    || strcmp(elem{3}, 'left') || strcmp(elem{3}, 'right')
+                    || strcmp(elem{3}, 'left') || strcmp(elem{3}, 'right'))
                 for k = 1:length(secondnames)
                     new_relation.rel = [new_relation.rel; {firstnames{j}, secondnames{k}, elem{3}}];
+                    if k > 2
+                        multidirnames = [multidirnames, secondnames{k}];
+                    end
                 end
             else
                 new_relation.rel = [new_relation.rel; {firstnames{j}, secondnames, elem{3}}];
@@ -85,4 +90,9 @@ for i = 1:size(new_relation.rel, 1)
         id = get_objectid(new_relation.rel{i, 1}, new_relation.nouns);
         new_relation.multidir(id) = 1;
     end
+end
+
+for i = 1:length(multidirnames)
+    id = get_objectid(multidirnames{i}, new_relation.nouns);
+    new_relation.multidir(id) = 1;
 end

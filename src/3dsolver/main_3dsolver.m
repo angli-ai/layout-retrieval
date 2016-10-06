@@ -1,6 +1,6 @@
 % 3dsolver main
 
-inputdir = '../data/relations-sunrgbd-all';
+inputdir = '../data/relations-sunrgbdv6';
 outputroot = 'output-sun-mac-new';
 if ~exist(outputroot, 'dir')
     mkdir(outputroot);
@@ -11,7 +11,7 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '16-00322';
+imagename = '109-01829';
 relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 

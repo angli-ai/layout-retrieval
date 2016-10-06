@@ -54,6 +54,8 @@ while true
 end
 global starttime
 
+debug = false;
+
 exitcondition = [];
 exitcondition.num_layouts = 10;
 exitcondition.time = 3600;
@@ -83,6 +85,12 @@ for i = 1:Nobj
         X0(i*4-2, :) = get_object_center([0, 0], config.relation.sizes(i, :), j);
         new_layouts = do_interval_branch_bound(X0, config, nsamples);
         layouts = [layouts, new_layouts];
+        if length(layouts) > 1
+            break
+        end
+    end
+    if debug && length(layouts) > 1
+        break
     end
 end
 
@@ -118,5 +126,12 @@ for i = 1:Nobj
         X1(j*4-3,:) = [loc(1) loc(1)];
         new_layouts = do_interval_branch_bound(X1, config, nsamples);
         layouts = [layouts, new_layouts];
+        
+        if debug && length(layouts) > 1
+            break
+        end
     end
+            if debug && length(layouts) > 1
+            break
+        end
 end

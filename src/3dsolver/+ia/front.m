@@ -1,4 +1,8 @@
 function R = front(p1, q1, d1, p2, q2, d2, dnear)
+if vector_eq(d2, [2, 2]) || vector_eq(d2, [3, 3])
+    R = ia.behind(p1, q1, d1, p2, q2, d2-2, dnear);
+    return
+end
 R = [];
 R = ia.and(R, ia.near(dnear, p1, q1, p2, q2));
 if vector_eq(d2, [0, 0])
