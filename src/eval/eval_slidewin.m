@@ -1,16 +1,17 @@
 % eval exhaustive search
 
-input_layout2d = '../3dsolver/output-ramawks-2/';
+input_layout2d = '../cvpr17data/output-cvpr17sun-v1-5';
 
-nquery = 21;
+nquery = 218;
 
-dataset = 'sunrgbd';
+dataset = 'cvpr17sun-v1';
 inputdir = fullfile('baseline-data', dataset);
-outputdir = 'sunrgbd-output-4';
+outputdir = ['evaloutput-' dataset];
 if ~exist('SUNRGBDMeta', 'var')
     load('detection-box/SUNRGBDMeta.mat');
 end
 
+dataset = 'sunrgbd'
 % load ground truth
 detection_dir = fullfile('detection-box', dataset);
 if ~exist('gt', 'var')

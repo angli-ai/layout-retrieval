@@ -1,6 +1,6 @@
 % generate baseline input data
-dataset = 'sunrgbd';
-inputdir = ['../data/relations-' dataset '-all'];
+dataset = 'cvpr17sun-v1';
+inputdir = ['../cvpr17data/relations-' dataset];
 outputdir = fullfile('baseline-data', dataset);
 
 if ~exist(outputdir, 'dir')
