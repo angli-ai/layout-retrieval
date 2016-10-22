@@ -25,20 +25,20 @@ num_found = 0;
 % multidir_index = logical(multidir_index(:));
 for i = 1:size(dir_val, 1)
     for j = 1:size(dir_multidir, 1)
-    X = X0;
-    X(index, :) = [dir_val(i, :); dir_val(i, :)]';
-    X(multidir_index, :) = X(multidir_index, :) + double([dir_multidir(j, :); dir_multidir(j, :)]');
-    [ok, X] = direction_check_ok(X, config);
-    if ok
-        current_layout = random_interval_analysis(X, config, nsamples);
-        layouts = [layouts current_layout];
-        if ~isempty(current_layout)
-            num_found = num_found + 1;
-            if num_found == nsamples
-                break;
+        X = X0;
+        X(index, :) = [dir_val(i, :); dir_val(i, :)]';
+        X(multidir_index, :) = X(multidir_index, :) + double([dir_multidir(j, :); dir_multidir(j, :)]');
+        [ok, X] = direction_check_ok(X, config);
+        if ok
+            current_layout = random_interval_analysis(X, config, nsamples);
+            layouts = [layouts current_layout];
+            if ~isempty(current_layout)
+                num_found = num_found + 1;
+                if num_found == nsamples
+                    break;
+                end
             end
         end
-    end
     end
     if num_found == nsamples
         break

@@ -13,7 +13,7 @@ TEXT_FILE = 'written_text-all.txt'
 TEXT_FILE = '3dgp_text.txt'
 TEXT_FILE = 'sunrgbd_text.txt'
 TEXT_FILE = 'written_text-sunrgbdv5.txt'
-TEXT_FILE = 'text-cvpr17sun-v3.txt'
+TEXT_FILE = 'text-cvpr17sun-v1.txt'
 
 class StanfordNLP:
     def __init__(self):
