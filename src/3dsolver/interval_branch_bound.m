@@ -85,7 +85,7 @@ for i = 1:Nobj
         X0(i*4-2, :) = get_object_center([0, 0], config.relation.sizes(i, :), j);
         new_layouts = do_interval_branch_bound(X0, config, nsamples);
         layouts = [layouts, new_layouts];
-        if length(layouts) > 1
+        if debug && length(layouts) > 1
             break
         end
     end
@@ -131,7 +131,7 @@ for i = 1:Nobj
             break
         end
     end
-            if debug && length(layouts) > 1
-            break
-        end
+    if debug && length(layouts) > 1
+        break
+    end
 end

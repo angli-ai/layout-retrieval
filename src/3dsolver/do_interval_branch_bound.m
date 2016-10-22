@@ -374,22 +374,23 @@ for i = 1:Nrel
 %             if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
 %                 R = ia.and(R, ia.equal(d1, d2));
 %             end
-            R = ia.and(R, ia.left(p1, q1, d1, p2, q2, d2, dnear));
+            if ~config.relation.support(obj1) && ~config.relation.support(obj2)
+                if X(obj1*4,2) == 0
+                    R = ia.and(R, ia.left(p1([1 3 2],:), q1([1 3 2],:), d1, p2([1 3 2],:), q2([1 3 2],:), d2, dnear));
+                elseif X(obj1*4,2) == 1
+                    R = ia.and(R, ia.left(p1([3 2 1],:), q1([3 2 1],:), d2, p2([3 2 1],:), q2([3 2 1],:), d2, dnear));
+                end
+            else
+                R = ia.and(R, ia.left(p1, q1, d1, p2, q2, d2, dnear));
+            end
         case 'right'
             d1 = X(obj1*4,:);
             d2 = X(obj2*4,:);
 %             if config.relation.againstwall(obj1) && config.relation.againstwall(obj2)
 %                 R = ia.and(R, ia.equal(d1, d2));
 %             end
-            if ~config.relation.support(obj1) && ~config.relation.support(obj2)
-                if X(obj1*4,2) == 0
-                    R = ia.and(R, ia.right(p1([1 3 2],:), q1([1 3 2],:), d1, p2([1 3 2],:), q2([1 3 2],:), d2, dnear));
-                elseif X(obj1*4,2) == 1
-                    R = ia.and(R, ia.right(p1([3 2 1],:), q1([3 2 1],:), d2, p2([3 2 1],:), q2([3 2 1],:), d2, dnear));
-                end
-            else
+
                 R = ia.and(R, ia.right(p1, q1, d1, p2, q2, d2, dnear));
-            end
         case {'in_front_of', 'front'}
             R = ia.and(R, ia.front(p1, q1, X(obj1*4,:), p2, q2, X(obj2*4,:), dnear));
         case 'behind'

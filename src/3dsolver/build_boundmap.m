@@ -66,7 +66,7 @@ for i = 1:Nrel
                 % x1 - x2 > ox2 + sx2
                 lb(1, obj1, obj2) = max(lb(1, obj1, obj2), o2(1) + s2(1));
             end
-        case 'right'
+        case 'left'
             lb(:, obj1, obj2) = max(lb(:, obj1, obj2), -s1(1:3)-dnear);
             ub(:, obj1, obj2) = min(ub(:, obj1, obj2), s2(1:3)+dnear);
             if vector_eq(X(obj2*4, :), [0 0])
@@ -80,7 +80,7 @@ for i = 1:Nrel
                 % x1 <= x2 + ox2 + sx2 => x1 - x2 < ox2+sx2
                 ub(1, obj1, obj2) = min(ub(1, obj1, obj2), o2(1)+s2(1));
             end
-        case 'left'
+        case 'right'
             lb(:, obj1, obj2) = max(lb(:, obj1, obj2), -s1(1:3)-dnear);
             ub(:, obj1, obj2) = min(ub(:, obj1, obj2), s2(1:3)+dnear);
             if vector_eq(X(obj2*4, :), [0 0])
