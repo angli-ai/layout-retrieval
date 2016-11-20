@@ -2,10 +2,11 @@
 
 input_layout2d = '../cvpr17data/output-cvpr17sun-v1-5';
 
-nquery = 218;
+nquery = 124;
 
 dataset = 'cvpr17sun-v1';
 inputdir = fullfile('baseline-data', dataset);
+outputdir = '../cvpr17evaldata/output-cvpr17sun-v1-5-rcnnsoft';
 outputdir = ['evaloutput-' dataset];
 if ~exist('SUNRGBDMeta', 'var')
     load('detection-box/SUNRGBDMeta.mat');

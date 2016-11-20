@@ -1,7 +1,7 @@
 % 3dsolver main
 
-inputdir = '../cvpr17data/relations-cvpr17sun-v1';
-outputroot = 'output-cvpr17sun-v1';
+inputdir = '../cvpr17data/relations-cvpr173dgp';
+outputroot = '../cvpr17data/output-cvpr173dgp';
 if ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -11,8 +11,8 @@ end
 % imagename = imagename.name(1:end-length('.jpg-relation.mat'));
 % relation_mat = imagename.name;
 % imagename = 'test';
-imagename = '1-00024';
-relation_mat = [imagename '.jpg-relation.mat'];
+imagename = '66';
+relation_mat = [imagename '-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
 
 relation = load(fullfile(inputdir, relation_mat));

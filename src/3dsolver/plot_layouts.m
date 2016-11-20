@@ -1,6 +1,9 @@
-function plot_layouts(config, layouts, outputdir)
+function plot_layouts(config, layouts, outputdir, saveimage)
 if nargin < 3
     outputdir = [];
+end
+if nargin < 4
+    saveimage = true;
 end
 
 use_eps = false;
@@ -16,8 +19,10 @@ cmap = colormap;
 for i = 1:Nlayouts
     layout = layouts{i};
     Nobj = size(layout.objs, 2);
-    figure(1);
-    scatter3(layout.cam(1), layout.cam(2), layout.cam(3), 'x'); hold on;
+    if saveimage
+        figure(1);
+        scatter3(layout.cam(1), layout.cam(2), layout.cam(3), 'x'); hold on;
+    end
     bbox2d = [];
     fillqueue = [];
     fillqueue.x = [];
@@ -33,9 +38,13 @@ for i = 1:Nlayouts
                 for k = 1:length(config.objmodels.subobjs)
                     if strncmp(config.objmodels.subobjs{k}, config.relation.class{j}, length(config.relation.class{j}))
                         [p, q] = get_abs_coords(config, config.objmodels.subobjs{k}, j, layout.objs(4, j), layout.objs(1:3, j));
-                        figure(1);
-                        [x, y, z] = plot_cuboid(p, q, c);
-                        hold on;
+                        if saveimage
+                            figure(1);
+                        end
+                        [x, y, z] = plot_cuboid(p, q, c, saveimage);
+                        if saveimage
+                            hold on;
+                        end
                         pts = [x(:) y(:) z(:)];
                         [kpts2d, zbuf] = camera_projection(pts, layout.cam, pi/2 + layout.cam_ax/180*pi, layout.focal);
                         x = reshape(kpts2d(1, :), 4, 6);
@@ -58,9 +67,13 @@ for i = 1:Nlayouts
                 end
             otherwise
                 [p, q] = get_abs_coords(config, config.relation.nouns{j}, j, layout.objs(4, j), layout.objs(1:3, j));
-                figure(1);
-                [x, y, z] = plot_cuboid(p, q, c);
-                hold on;
+                if saveimage
+                    figure(1);
+                end
+                [x, y, z] = plot_cuboid(p, q, c, saveimage);
+                if saveimage
+                    hold on;
+                end
                 pts = [x(:) y(:) z(:)];
                 [pts2d, zbuf] = camera_projection(pts, layout.cam, pi/2 + layout.cam_ax/180*pi, layout.focal);
                 z = reshape(zbuf, 4, 6);
@@ -89,44 +102,46 @@ for i = 1:Nlayouts
         % project to 2d: pts
 %         [pts2d, zbuf] = camera_projection(pts, layout.cam, pi/2 + layout.cam_ax/180*pi, layout.focal);
     end
-    h = figure(1);
-    axis equal;
-    hold off;
-    if ~isempty(outputdir)
-        saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-3d.jpg')));
-    end
-    h = figure(2);
-    
-    [~, index] = sort(fillqueue.z, 'descend');
-    for j = 1:length(fillqueue.z)
-        x = fillqueue.x(:, index(j));
-        y = fillqueue.y(:, index(j));
-        c = fillqueue.c(index(j));
-        hf = fill(x, y, c);
-        set(hf,'facealpha',.5);
-        set(hf,'edgealpha',.5);
-        hold on;
-    end
-    axis equal;
-    hold off;
-    if ~isempty(outputdir)
-        if use_eps
-            saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.eps')), 'ps2c');
-        else
-        saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.jpg')));
+    if saveimage
+        h = figure(1);
+        axis equal;
+        hold off;
+        if ~isempty(outputdir)
+            saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-3d.jpg')));
         end
-    end
-    h = figure(2);
-    axis equal;
-    hold off;
-    for j = 1:Nobj
-        bbox = bbox2d(j, :);
-        rectangle('Position', [bbox(1:2) bbox(3:4)-bbox(1:2)], 'edgecolor', 'r', 'linewidth', 2);
-        text(bbox(1), bbox(4), config.relation.class{j}, 'backgroundcolor', 'w', 'edgecolor', 'k', ...
-    'interpreter', 'none');
-    end
-    if ~isempty(outputdir)
-        saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-bbox.jpg')));
+        h = figure(2);
+
+        [~, index] = sort(fillqueue.z, 'descend');
+        for j = 1:length(fillqueue.z)
+            x = fillqueue.x(:, index(j));
+            y = fillqueue.y(:, index(j));
+            c = fillqueue.c(index(j));
+            hf = fill(x, y, c);
+            set(hf,'facealpha',.5);
+            set(hf,'edgealpha',.5);
+            hold on;
+        end
+        axis equal;
+        hold off;
+        if ~isempty(outputdir)
+            if use_eps
+                saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.eps')), 'ps2c');
+            else
+            saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-2d.jpg')));
+            end
+        end
+        h = figure(2);
+        axis equal;
+        hold off;
+        for j = 1:Nobj
+            bbox = bbox2d(j, :);
+            rectangle('Position', [bbox(1:2) bbox(3:4)-bbox(1:2)], 'edgecolor', 'r', 'linewidth', 2);
+            text(bbox(1), bbox(4), config.relation.class{j}, 'backgroundcolor', 'w', 'edgecolor', 'k', ...
+        'interpreter', 'none');
+        end
+        if ~isempty(outputdir)
+            saveas(h, fullfile(outputdir, num2str(i, 'layout-%d-bbox.jpg')));
+        end
     end
     layout_table = table(config.relation.class', bbox2d(:, 1), bbox2d(:, 2), bbox2d(:, 3), bbox2d(:, 4), ...
         'VariableNames',{'classname' 'X1' 'Y1' 'X2' 'Y2'});

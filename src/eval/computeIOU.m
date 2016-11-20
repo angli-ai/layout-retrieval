@@ -1,0 +1,11 @@
+function iou = computeIOU(p1, p2)
+a1 = p1(3)*p1(4);
+a2 = p2(3)*p2(4);
+p1 = p1 + [0, 0, p1(1), p1(2)];
+p2 = p2 + [0, 0, p2(1), p2(2)];
+interx1 = max(p1(1), p2(1));
+intery1 = max(p1(2), p2(2));
+interx2 = min(p1(3), p2(3));
+intery2 = min(p1(4), p2(4));
+interA = max(0, (interx2 - interx1)) .* max(0, (intery2 - intery1));
+iou = interA ./ (a1 + a2 - interA);

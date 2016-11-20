@@ -100,5 +100,7 @@ xlabel('X');
 ylabel('Y');
 zlabel('Z');
 axis equal;
-view([30 15]);
+view([120 15]);
+set(gca, 'fontsize', 15);
 saveas(h, fullfile(outputdir, [objectname '.png']));
+saveas(h, fullfile(outputdir, [objectname '.eps']), 'ps2c');

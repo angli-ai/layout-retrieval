@@ -7,16 +7,16 @@ if nargin < 1
 end
 
 use_gt = false;
-use_thresh = true;
+use_thresh = false;
 thresh = -inf;
 
-input_layout2d = '../data/output-3dgpv2-5-5/';
+input_layout2d = '../cvpr17data/output-cvpr173dgp-v5/';
 if use_thresh
     suffix =  num2str(thresh);
 else
     suffix = '-soft';
 end
-outputdir = ['../eval-data/output-3dgpv2-5-5-det-inf'];
+outputdir = ['../cvpr17evaldata/output-cvpr173dgp-v5-det'];
 
 dataset = '3dgp';
 inputdir = fullfile('baseline-data', dataset);

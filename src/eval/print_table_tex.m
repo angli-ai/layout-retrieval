@@ -8,7 +8,7 @@ for i = 1:N
             fprintf(1, '&');
         end
         if isnumeric(elem)
-            fprintf(1, '%.2f', elem);
+            fprintf(1, '%.2f', elem*100);
         elseif iscell(elem)
             fprintf(1, '%s', elem{1});
         end

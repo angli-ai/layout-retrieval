@@ -390,7 +390,7 @@ for i = 1:Nrel
 %                 R = ia.and(R, ia.equal(d1, d2));
 %             end
 
-                R = ia.and(R, ia.right(p1, q1, d1, p2, q2, d2, dnear));
+            R = ia.and(R, ia.right(p1, q1, d1, p2, q2, d2, dnear));
         case {'in_front_of', 'front'}
             R = ia.and(R, ia.front(p1, q1, X(obj1*4,:), p2, q2, X(obj2*4,:), dnear));
         case 'behind'

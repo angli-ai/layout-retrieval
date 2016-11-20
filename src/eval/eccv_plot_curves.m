@@ -3,6 +3,7 @@ nmethod = length(ranks);
 curvedata = {};
 aucdata = [];
 topK = [];
+topkk = 500;
 for i = 1:nmethod
     data = zeros(1, ntot);
     Ntest = length(ranks{i});
@@ -12,7 +13,7 @@ for i = 1:nmethod
 %     data(ranks{i}) = 1;
     cumdata = cumsum(data)/Ntest;
     auc = sum(cumdata) / ntot;
-    curvedata = [curvedata, (1:ntot)/ntot, cumdata, linestyle{i}];
+    curvedata = [curvedata, (1:topkk)/ntot, cumdata(1:topkk), linestyle{i}];
     aucdata = [aucdata, auc];
     topK = [topK; cumdata];
 end
@@ -23,7 +24,7 @@ plot(curvedata{:}, 'LineWidth', 2);
 grid on;
 xlabel('Percentage of top ranked images');
 ylabel('Percentage of ground truth retrieved');
-xlim([0, 1]);
+% xlim([0, topkk/ntot]);
 for i = 1:nmethod
     methods{i} = [methods{i} ': auc=' num2str(aucdata(i), '%.2f')];
 end

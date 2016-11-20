@@ -5,8 +5,10 @@ if nargin < 1
     worker_id = 1;
     num_workers = 1;
 end
-inputdir = '../data/relations-sunrgbdv5';
-outputroot = '../data/output-sunrgbdv5-5-5';
+inputdir = '../cvpr17data/relations-cvpr173dgp';
+outputroot = '../cvpr17data/output-cvpr173dgp';
+suffix =  '.jpg-relation';
+suffix = '-relation';
 if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -25,7 +27,7 @@ for i = 1:length(filelist)
     end
     relation_mat = filelist{i};
     disp(relation_mat);
-    index = strfind(relation_mat, '.jpg-relation');
+    index = strfind(relation_mat, suffix);
     imagename = relation_mat(1:index(1)-1);
 % relation_mat = [imagename '.jpg-relation.mat'];
 outputdir = fullfile(outputroot, imagename);
@@ -35,6 +37,10 @@ if exist(outputdir, 'dir')
 end
 
 relation = load(fullfile(inputdir, relation_mat));
+
+if isempty(relation.nouns)
+    continue;
+end
 
 % expand plural nouns and collect size/support info.
 relation = relation_preprocess(relation);
@@ -62,8 +68,8 @@ config.room = room;
 config.spatial = spatial;
 global starttime
 starttime = tic;
-num_layout_sample = 5;
-num_layout_sample_each = 5;
+num_layout_sample = 20;
+num_layout_sample_each = 20;
 % compute layouts
 layouts = interval_branch_bound(config, num_layout_sample_each);
 % sample layouts
