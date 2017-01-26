@@ -2,6 +2,18 @@ local argcheck = require 'argcheck'
 local libimage = require 'image'
 
 local utils = {}
+utils.bboxUnion = function(bbox1, bbox2)
+   -- xmin, ymin, xmax, ymax
+   assert(bbox1[1] < bbox1[3] and bbox2[1] < bbox2[3])
+   assert(bbox1[2] < bbox1[4] and bbox2[2] < bbox2[4])
+   return {
+      math.min(bbox1[1], bbox2[1]),
+      math.min(bbox1[2], bbox2[2]),
+      math.max(bbox1[3], bbox2[3]),
+      math.max(bbox1[4], bbox2[4])
+   }
+end
+
 utils.loadjson = function(filepath)
    local json = require 'cjson'
    local file = io.open(filepath)

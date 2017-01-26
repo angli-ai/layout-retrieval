@@ -13,9 +13,12 @@ dataset = SunRelDataset{mode='train'}
 print('#dataset', dataset:size())
 
 idx = torch.random(dataset:size())
+for idx = 1, dataset:size() do
 data = dataset:get(idx)
 
 print(data.subject, data.predicate, data.object)
+
+if data.predicate == 'left' then
 
 subbox = data.subjectbbox
 objbox = data.objectbbox
@@ -57,3 +60,8 @@ output = utils.resizeSquare{
 feature = vggnet:forward(output)
 libimage.display(output)
 -- print(feature)
+
+break
+
+end
+end
