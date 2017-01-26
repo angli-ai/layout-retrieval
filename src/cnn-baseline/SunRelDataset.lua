@@ -13,9 +13,9 @@ dataset.__init = argcheck{
    call = function(self, datapath, mode)
       assert(mode == 'train')
       local imagepath = datapath..'/trainimages/'
-      local annojson = datapath..'/train_relation_anno.json'
-      local objectjson = datapath..'/train_objects.json'
-      local predicatejson = datapath..'/train_predicates.json'
+      local annojson = datapath..'/trainjsons/train_relation_anno.json'
+      local objectjson = datapath..'/trainjsons/train_objects.json'
+      local predicatejson = datapath..'/trainjsons/train_predicates.json'
       local anno = utils.loadjson(annojson)
       local objects = utils.loadjson(objectjson)
       local predicates = utils.loadjson(predicatejson)
