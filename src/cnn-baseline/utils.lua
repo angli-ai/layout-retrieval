@@ -4,7 +4,7 @@ local libimage = require 'image'
 local utils = {}
 utils.bboxUnion = function(bbox1, bbox2)
    -- xmin, ymin, xmax, ymax
-   assert(bbox1[1] < bbox1[3] and bbox2[1] < bbox2[3])
+   assert(bbox1[1] < bbox1[3] and bbox2[1] < bbox2[3], 'error: '..bbox2[1]..' < '..bbox2[3]..' ')
    assert(bbox1[2] < bbox1[4] and bbox2[2] < bbox2[4])
    return {
       math.min(bbox1[1], bbox2[1]),
@@ -26,7 +26,8 @@ utils.resizeSquare = argcheck{
    {name='input', type='torch.*Tensor'},
    {name='outputsize', type='number', default=224},
    {name='padding', type='boolean', default=false},
-   call = function(input, outputsize, padding)
+   {name='paddingRGB', type='table', default={0,0,0}},
+   call = function(input, outputsize, padding, paddingRGB)
       local libimage = require 'image'
       local nc, height, width = unpack(input:size():totable())
       local temp
@@ -38,8 +39,12 @@ utils.resizeSquare = argcheck{
       local output = input.new(nc, outputsize, outputsize)
       if padding then
          for k = 1, nc do
-            local meanval = temp[k]:mean()
-            output[k]:fill(meanval)
+            if paddingRGB then
+               output[k]:fill(paddingRGB[k])
+            else
+               local meanval = temp[k]:mean()
+               output[k]:fill(meanval)
+            end
          end
       else
          output:fill(0)
@@ -49,6 +54,39 @@ utils.resizeSquare = argcheck{
       output[{{}, {yoffset + 1, yoffset + temp:size(2)}, {xoffset + 1, xoffset + temp:size(3)}}]:copy(temp)
       return output
       
+   end
+}
+
+-- crop a set of bounding boxes
+utils.cropUnionBox = argcheck{
+   {name='input', type='torch.*Tensor'},
+   {name='boxes', type='table'},
+   {name='padding', type='boolean', default=false},
+   {name='paddingRGB', type='table', default={0,0,0}},
+   {name='outputsize', type='number', default=224},
+   call = function(input, boxes, padding, paddingRGB, outputsize)
+      assert(#boxes > 0)
+      local unionbox = boxes[1]
+      for k = 2, #boxes do
+         unionbox = utils.bboxUnion(unionbox, boxes[k])
+      end
+      local libimage = require 'image'
+      local cropim = libimage.crop(input, unionbox[1], unionbox[2], unionbox[3], unionbox[4])
+      local output
+      if padding then
+         output = input.new(cropim:size())
+         assert(#paddingRGB == 3)
+         for k = 1, 3 do
+            output[k]:fill(paddingRGB[k])
+         end
+         for _,v in ipairs(boxes) do
+            output[{{}, {v[2]-unionbox[2]+1, v[4]-unionbox[2]}, {v[1]-unionbox[1]+1, v[3]-unionbox[1]}}]:copy(
+               cropim[{{}, {v[2]-unionbox[2]+1, v[4]-unionbox[2]}, {v[1]-unionbox[1]+1, v[3]-unionbox[1]}}])
+         end
+      else
+         output = cropim
+      end
+      return output
    end
 }
 

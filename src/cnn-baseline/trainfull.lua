@@ -27,6 +27,7 @@ cmd:option('-weight_decay', 0.0001, 'weight decay')
 cmd:option('-nesterov', 0.9, 'nesterov momentum')
 cmd:option('-momentum', 0, 'non-nesterov momentum')
 cmd:option('-disable_test', false, 'disable test')
+cmd:option('-save_latest_only', false, 'only save latest model')
 local config = cmd:parse(arg or {})
 
 print(config)
@@ -142,6 +143,7 @@ end
 local featsize = 4096
 local ntargets = #predicates
 local net = nn.Sequential()
+net:add(vggnet)
 
 if config.head == 'linear' then
    net:add(nn.Linear(featsize, ntargets))
@@ -207,9 +209,10 @@ engine.hooks.onForwardCriterion = function(state)
    if state.criterion.output < minloss then minloss = state.criterion.output end
    if state.criterion.output > maxloss then maxloss = state.criterion.output end
    if maxloss > minloss * 1000 then
+      print(maxloss, minloss)
       error('weird loss values: maxloss > minloss * 1000. reduce learning rate?')
    end
-   if cnt < 5 then print(state.criterion.output) end
+   -- if cnt < 5 then print(state.criterion.output) end
    meter:add(state.criterion.output)
    clerr:add(state.network.output, state.sample.target)
    cnt = cnt + 1
@@ -235,7 +238,7 @@ engine.hooks.onEndEpoch = function(state)
          criterion = state.criterion,
       }
    end
-   if save_last_only then
+   if config.save_latest_only then
       torch.save(config.outputdir..'/model-last.t7', state.network)
    else
       torch.save(config.outputdir..'/model-'..state.epoch..'.t7', state.network)
@@ -249,17 +252,11 @@ if not config.usecpu then
    net = net:cuda()
    criterion = criterion:cuda()
    vggnet = vggnet:cuda()
-   local igpu, igpu2, tgpu = torch.CudaTensor(), torch.CudaTensor(), torch.CudaLongTensor()
+   local igpu, tgpu = torch.CudaTensor(), torch.CudaLongTensor()
    engine.hooks.onSample = function(state)
       igpu:resize(state.sample.input:size()):copy(state.sample.input)
-      local nc = state.sample.input:size(1)
-      igpu2:resize(nc, 4096)
-      for k = 1, nc, config.trunkbatchsize do
-         local endidx = math.min(nc, k+config.trunkbatchsize-1)
-         igpu2[{{k,endidx},{}}]:copy(vggnet:forward(igpu[{{k,endidx},{},{},{}}]))
-      end
       tgpu:resize(state.sample.target:size()):copy(state.sample.target)
-      state.sample.input = igpu2
+      state.sample.input = igpu
       state.sample.target = tgpu
    end
 end
