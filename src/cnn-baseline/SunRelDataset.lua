@@ -62,7 +62,7 @@ dataset.get = argcheck{
          input = image.decompress(compressed, 3, 'double')
       else
          local imagepath = self.imagepath..'/'..data.filename
-         input = libimage.load(imagepath)
+         input = libimage.load(imagepath, 3, 'double')
       end
       local output = {input = input}
       for k,v in pairs(data) do

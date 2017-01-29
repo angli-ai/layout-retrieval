@@ -28,6 +28,7 @@ cmd:option('-nesterov', 0.9, 'nesterov momentum')
 cmd:option('-momentum', 0, 'non-nesterov momentum')
 cmd:option('-disable_test', false, 'disable test')
 cmd:option('-save_latest_only', false, 'only save latest model')
+cmd:option('-netvers', 'v4', 'network version')
 local config = cmd:parse(arg or {})
 
 print(config)
@@ -50,9 +51,22 @@ else
 end
 config.lr = lrtensor
 
-local vggnet = loadcaffe.load('VGG_ILSVRC_19_layers_deploy.prototxt' , 'VGG_ILSVRC_19_layers.caffemodel')
-vggnet:evaluate()
-for i = 1,3 do vggnet:remove() end
+local objects = utils.loadjson('data/trainjsons/train_objects.json')
+local w2vutils = require 'w2vutils'
+local objwordvec = {}
+for _,o in ipairs(objects) do
+   local words = o:split('_')
+   local wordvec
+   for _,v in pairs(words) do
+      if wordvec then
+         wordvec:add(w2vutils:word2vec(v, true))
+      else
+         wordvec = w2vutils:word2vec(v, true)
+      end
+   end
+   wordvec:div(#words)
+   objwordvec[o] = wordvec:clone()
+end
 
 local predicates = utils.loadjson('data/trainjsons/train_predicates.json')
 
@@ -87,7 +101,10 @@ local datatransformer = function(x)
       paddingRGB = vggmeanRGB,
    }
    local utils = require 'utils'
+   local subjvec = objwordvec[x.subject]
+   local objvec = objwordvec[x.object]
    x.input = utils.preprocess(input)
+   x.wordvec = torch.cat(subjvec, objvec)
    --[[
    vggnet:forward(input)
    x.input = vggnet.output:clone()
@@ -141,18 +158,8 @@ local function getIterator(dataset, mode)
 end
 
 local featsize = 4096
-local ntargets = #predicates
-local net = nn.Sequential()
-net:add(vggnet)
-
-if config.head == 'linear' then
-   net:add(nn.Linear(featsize, ntargets))
-elseif config.head == 'mlp' then
-   local nhidden = 128
-   net:add(nn.Linear(featsize, nhidden))
-   :add(nn.ReLU())
-   :add(nn.Linear(nhidden, ntargets))
-end
+local modelgen = require('models/'..config.netvers..'.lua')
+local net = modelgen(#predicates)
 local criterion = nn.CrossEntropyCriterion()
 
 local epoch = 0
@@ -251,12 +258,16 @@ if not config.usecpu then
    require 'cudnn'
    net = net:cuda()
    criterion = criterion:cuda()
-   vggnet = vggnet:cuda()
-   local igpu, tgpu = torch.CudaTensor(), torch.CudaLongTensor()
+   local igpu, wgpu, tgpu = torch.CudaTensor(), torch.CudaTensor(), torch.CudaLongTensor()
    engine.hooks.onSample = function(state)
       igpu:resize(state.sample.input:size()):copy(state.sample.input)
       tgpu:resize(state.sample.target:size()):copy(state.sample.target)
-      state.sample.input = igpu
+      if state.sample.wordvec then
+         wgpu:resize(state.sample.wordvec:size()):copy(state.sample.wordvec)
+         state.sample.input = {igpu, wgpu}
+      else
+         state.sample.input = igpu
+      end
       state.sample.target = tgpu
    end
 end
