@@ -8,11 +8,11 @@ end
 
 dataset = 'sunrgbd';
 use_gt = false;
-use_thresh = false;
+use_thresh = true;
 thresh = 0.5;
 
-input_layout2d = '../data/output-sunrgbdv5-20/';
-outputdir = '../eval-data/output-sunrgbdv5-20-det';
+input_layout2d = '../cvpr17data/ablations/sun-5-1-v5';
+outputdir = '../cvpr17evaldata/ablations-cvpr17sun-hard-5-1-v5';
 
 inputdir = fullfile('baseline-data', dataset);
 if ~exist('SUNRGBDMeta', 'var')

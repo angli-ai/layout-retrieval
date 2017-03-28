@@ -2,13 +2,13 @@
 
 dataset = 'sunrgbd';
 inputdir = fullfile('baseline-data', dataset);
-resultdir = ['../eval-data/output-' dataset '-1-5-gt'];
+resultdir = ['../cvpr17evaldata/output-' dataset '-5-det'];
 
 resultlist = dir(fullfile(resultdir, '*.mat'));
 resultlist = {resultlist(:).name};
 
 % load ground truth
-detection_dir = fullfile('detection-box', dataset);
+detection_dir = fullfile('detection-box', odataset);
 if ~exist('gt', 'var')
 gt = load(fullfile(detection_dir, 'gtbbox_test.mat'));
 end

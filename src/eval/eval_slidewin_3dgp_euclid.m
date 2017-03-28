@@ -10,13 +10,13 @@ use_gt = false;
 use_thresh = false;
 thresh = -inf;
 
-input_layout2d = '../cvpr17data/output-cvpr173dgp-v5/';
+input_layout2d = '../cvpr17data/output-cvpr173dgp-v10/';
 if use_thresh
     suffix =  num2str(thresh);
 else
     suffix = '-soft';
 end
-outputdir = ['../cvpr17evaldata/output-cvpr173dgp-v5-det'];
+outputdir = ['../cvpr17evaldata/output-cvpr173dgp-v10-det'];
 
 dataset = '3dgp';
 inputdir = fullfile('baseline-data', dataset);

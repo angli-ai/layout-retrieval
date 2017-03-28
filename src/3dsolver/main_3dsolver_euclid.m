@@ -5,10 +5,10 @@ if nargin < 1
     worker_id = 1;
     num_workers = 1;
 end
-inputdir = '../cvpr17data/relations-cvpr173dgp';
-outputroot = '../cvpr17data/output-cvpr173dgp';
+inputdir = '../cvpr17data/relations-cvpr17sun-current';
+outputroot = '../cvpr17data/output-cvpr17sun-current2';
 suffix =  '.jpg-relation';
-suffix = '-relation';
+% suffix = '-relation';
 if worker_id == 1 && ~exist(outputroot, 'dir')
     mkdir(outputroot);
 end
@@ -71,12 +71,14 @@ starttime = tic;
 num_layout_sample = 20;
 num_layout_sample_each = 20;
 % compute layouts
+mytimer = tic;
 layouts = interval_branch_bound(config, num_layout_sample_each);
+timecost = toc(mytimer);
 % sample layouts
 layout_samples = sample_layouts(config, layouts, num_layout_sample);
 if ~exist(outputdir, 'dir')
     mkdir(outputdir);
 end
-save(fullfile(outputdir, 'layout3d.mat'), 'config', 'layouts', 'layout_samples');
+save(fullfile(outputdir, 'layout3d.mat'), 'config', 'layouts', 'layout_samples', 'timecost');
 plot_layouts(config, layout_samples, outputdir);
 end

@@ -1,6 +1,6 @@
 #!/bin/bash
 ### Set the job name
-#PBS -N eval
+#PBS -N eval-sun-hard-5-1-v5
 
 ### Request email when job begins and ends
 #PBS -m bea
@@ -11,11 +11,11 @@
 ### Set the queue for this job as windfall or standard (adjust ### and #)
 ##PBS -q longnarrow
 ##PBS -q matlab-long
-#PBS -q octaque
+##PBS -q octaque
 ##PBS -q matlab
 ##PBS -q dque
 ##PBS -q matlab-wide
-##PBS -q shortwide
+#PBS -q shortwide
 
 ### Set the jobtype for this job (serial, small_mpi, small_smp, large_mpi, large_smp)
 ### jobtype=serial submits to htc and can be automatically moved to cluster and smp
@@ -27,7 +27,7 @@
 #PBS -l nodes=8:ppn=16
 
 ### Specify "wallclock time" required for this job, hhh:mm:ss
-#PBS -l walltime=08:00:00
+#PBS -l walltime=04:00:00
 
 ### Specify total cpu time required for this job, hhh:mm:ss
 ### total cputime = walltime * ncpus
@@ -44,9 +44,10 @@
 NP=$(wc -l < $PBS_NODEFILE)
 echo "Total CPU count = $NP"
 
-export jobname="run_eval_slidewin_mcc.sh"
+export jobname="eval_slidewin_euclid"
 shellpath="/gleuclid/angli/layout-retrieval/src/eval/generic-matlab-subjob.sh"
-shellpath="/gleuclid/angli/layout-retrieval/src/eval/mcc-job.sh"
+#export jobname="run_eval_slidewin_mcc.sh"
+#shellpath="/gleuclid/angli/layout-retrieval/src/eval/mcc-job.sh"
 
 if [ -z "$shellpath" ]; then
 	echo "shellpath unassigned"
